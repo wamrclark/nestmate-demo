@@ -327,15 +327,26 @@
   }
 
   /* ---------- Profile screen ---------- */
-  .profile-screen{padding:0 24px 84px;overflow-y:auto;}
+  .profile-screen{padding:0 20px 84px;overflow-y:auto;}
+  .profile-demo-note{
+    display:flex;align-items:flex-start;gap:8px;background:var(--sage-soft);color:var(--sage);
+    border-radius:14px;padding:11px 14px;font-size:12px;font-weight:600;line-height:1.45;
+    margin:16px 0 18px;text-align:left;
+  }
+  .profile-demo-note .demo-icon{font-size:14px;flex-shrink:0;line-height:1.5;}
+  .profile-section{
+    background:var(--paper-raised);border:1px solid var(--line);border-radius:20px;
+    padding:18px;margin-bottom:16px;box-shadow:0 8px 24px -18px rgba(32,26,43,0.25);
+  }
   .profile-photos-label{
     font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;
-    letter-spacing:0.04em;margin:14px 0 4px;text-align:left;
+    letter-spacing:0.04em;margin:0 0 4px;text-align:left;
   }
-  .profile-photos-hint{font-size:11.5px;color:var(--muted);text-align:left;margin-bottom:10px;}
-  .photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px;}
+  .profile-photos-hint{font-size:11.5px;color:var(--muted);text-align:left;margin-bottom:12px;}
+  .photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;}
   .photo-tile{
     position:relative;aspect-ratio:1;border-radius:14px;overflow:hidden;background:var(--sage-soft);
+    box-shadow:0 4px 10px -6px rgba(32,26,43,0.3);
   }
   .photo-tile img{width:100%;height:100%;object-fit:cover;display:block;}
   .photo-tile .primary-badge{
@@ -350,14 +361,15 @@
   .photo-tile.add-tile{
     display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2px;
     border:1.5px dashed var(--line);background:var(--paper);cursor:pointer;color:var(--muted);
-    font-size:26px;font-weight:300;
+    font-size:24px;font-weight:300;box-shadow:none;
   }
   .photo-tile.add-tile span.add-label{font-size:10px;font-weight:600;}
-  .profile-field{margin-bottom:16px;text-align:left;}
+  .profile-field{margin-bottom:18px;text-align:left;}
   .profile-field label{
     display:block;font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;
-    letter-spacing:0.04em;margin-bottom:6px;
+    letter-spacing:0.04em;margin-bottom:7px;
   }
+  .profile-field .text-input{margin-bottom:0;}
   .bio-input{min-height:96px;resize:vertical;line-height:1.5;font-family:inherit;}
   .profile-saved{
     display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:var(--sage);
@@ -591,20 +603,28 @@
         <span style="width:34px"></span>
       </div>
       <input type="file" id="profilePhotoInput" accept="image/*" multiple style="display:none">
-      <div class="profile-photos-label">Photos</div>
-      <div class="profile-photos-hint">Your first photo is your main one, shown on matches. Up to 6.</div>
-      <div class="photo-grid" id="photoGrid"></div>
-      <div class="profile-field">
-        <label for="profileName">Name</label>
-        <input type="text" class="text-input" id="profileName" placeholder="e.g. Jordan">
+      <div class="profile-demo-note" id="profileDemoNote">
+        <span class="demo-icon">&#10024;</span>
+        <span>Example profile so you can see how it looks filled in &mdash; edit anything below, then tap Save to make it yours.</span>
       </div>
-      <div class="profile-field">
-        <label for="profileOccupation">What you do</label>
-        <input type="text" class="text-input" id="profileOccupation" placeholder="e.g. Product designer">
+      <div class="profile-section">
+        <div class="profile-photos-label">Photos</div>
+        <div class="profile-photos-hint">Your first photo is your main one, shown on matches. Up to 6.</div>
+        <div class="photo-grid" id="photoGrid"></div>
       </div>
-      <div class="profile-field">
-        <label for="profileBio">Bio</label>
-        <textarea class="text-input bio-input" id="profileBio" placeholder="Tell future roommates a bit about yourself&hellip;"></textarea>
+      <div class="profile-section">
+        <div class="profile-field">
+          <label for="profileName">Name</label>
+          <input type="text" class="text-input" id="profileName" placeholder="e.g. Jordan">
+        </div>
+        <div class="profile-field">
+          <label for="profileOccupation">What you do</label>
+          <input type="text" class="text-input" id="profileOccupation" placeholder="e.g. Product designer">
+        </div>
+        <div class="profile-field" style="margin-bottom:0;">
+          <label for="profileBio">Bio</label>
+          <textarea class="text-input bio-input" id="profileBio" placeholder="Tell future roommates a bit about yourself&hellip;"></textarea>
+        </div>
       </div>
       <button class="btn btn-primary" onclick="saveProfile()">Save profile</button>
       <div id="profileSavedNote"></div>
@@ -1035,10 +1055,32 @@
     profilePhotos.splice(i, 1);
     renderPhotoGrid();
   };
+  // A real profile screen looks empty and unconvincing the first time you open it. If nothing's
+  // been entered yet, show example content (clearly labeled) so it's obvious what a filled-out
+  // profile looks like -- editing any field or saving replaces it with your own, same as typing
+  // over a placeholder.
+  var DEMO_PROFILE = {
+    name: 'Jordan',
+    occupation: 'Product designer',
+    bio: "Home by 9 most nights, always down for a shared dinner. Looking for someone easygoing who keeps shared spaces tidy."
+  };
   function renderProfileScreen(){
-    document.getElementById('profileName').value = (answers.yourName && answers.yourName!=='Not shared') ? answers.yourName : '';
-    document.getElementById('profileOccupation').value = (answers.occupation && answers.occupation!=='Not shared') ? answers.occupation : '';
-    document.getElementById('profileBio').value = profileBio;
+    var nameVal = (answers.yourName && answers.yourName!=='Not shared') ? answers.yourName : '';
+    var occVal = (answers.occupation && answers.occupation!=='Not shared') ? answers.occupation : '';
+    var bioVal = profileBio;
+    var isUntouched = !nameVal && !occVal && !bioVal && profilePhotos.length===0;
+    var note = document.getElementById('profileDemoNote');
+    if(isUntouched){
+      document.getElementById('profileName').value = DEMO_PROFILE.name;
+      document.getElementById('profileOccupation').value = DEMO_PROFILE.occupation;
+      document.getElementById('profileBio').value = DEMO_PROFILE.bio;
+      if(note) note.style.display = 'flex';
+    } else {
+      document.getElementById('profileName').value = nameVal;
+      document.getElementById('profileOccupation').value = occVal;
+      document.getElementById('profileBio').value = bioVal;
+      if(note) note.style.display = 'none';
+    }
     document.getElementById('profileSavedNote').innerHTML = '';
     renderPhotoGrid();
   }
