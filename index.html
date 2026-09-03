@@ -261,7 +261,7 @@
   .verify-actions{width:100%;margin-top:auto;padding:14px 0 6px;}
 
   /* ---------- Screen 3: Deck ---------- */
-  .deck-wrap{flex:1;padding:0 18px 18px;display:flex;flex-direction:column;}
+  .deck-wrap{flex:1;padding:0 18px 84px;display:flex;flex-direction:column;}
   .sponsored-banner{
     display:flex;align-items:center;gap:10px;background:var(--paper-raised);border:1px solid var(--line);
     border-left:3px solid var(--sage);border-radius:14px;padding:10px 12px;margin-bottom:10px;flex-shrink:0;
@@ -277,7 +277,7 @@
   .sponsored-banner .icon-btn{width:26px;height:26px;font-size:13px;flex-shrink:0;}
 
   /* ---------- Places (heat map) screen ---------- */
-  .places-screen{padding:0;}
+  .places-screen{padding:0 0 84px;}
   .places-intro{padding:0 18px 10px;flex-shrink:0;}
   .places-intro p{color:var(--muted);font-size:12.5px;line-height:1.5;}
   .heatmap-canvas{
@@ -324,7 +324,7 @@
   }
 
   /* ---------- Profile screen ---------- */
-  .profile-screen{padding:0 24px 20px;overflow-y:auto;}
+  .profile-screen{padding:0 24px 84px;overflow-y:auto;}
   .profile-avatar-wrap{
     position:relative;width:100px;height:100px;margin:6px auto 18px;cursor:pointer;flex-shrink:0;
   }
@@ -451,6 +451,22 @@
     color:#fff;font-family:'Fraunces',serif;font-weight:600;
   }
 
+  /* ---------- Bottom tab bar (replaces the old top-corner nav icons) ---------- */
+  .tab-bar{
+    position:absolute;left:0;right:0;bottom:0;z-index:8;
+    display:flex;justify-content:space-around;align-items:center;
+    background:var(--paper-raised);border-top:1px solid var(--line);
+    padding:8px 6px calc(8px + env(safe-area-inset-bottom, 0px));
+  }
+  .tab-btn{
+    display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;
+    background:none;border:none;cursor:pointer;color:var(--muted);
+    font-family:'Plus Jakarta Sans',sans-serif;font-size:10.5px;font-weight:600;padding:4px 2px;
+  }
+  .tab-btn .tab-icon{font-size:19px;line-height:1;}
+  .tab-btn.active{color:var(--flame);}
+  .tab-btn:focus-visible{outline:2px solid var(--flame);outline-offset:2px;}
+
   /* ---------- Nav dots (dev/demo aid) -- hidden in the standalone home-screen build ---------- */
   .demo-nav{display:none;}
   .footer-note{display:none;}
@@ -512,7 +528,7 @@
         <span class="title">Your matches</span>
         <span style="width:34px"></span>
       </div>
-      <div id="matchesList" style="flex:1;overflow-y:auto;padding:0 18px 18px;display:flex;flex-direction:column;gap:10px;"></div>
+      <div id="matchesList" style="flex:1;overflow-y:auto;padding:0 18px 84px;display:flex;flex-direction:column;gap:10px;"></div>
 
       <div class="detail-overlay" id="matchDetailOverlay">
         <div class="app-top">
@@ -587,9 +603,6 @@
           <div id="deckSubtitle" style="font-size:11.5px;color:var(--muted);margin-top:2px;"></div>
         </div>
         <div style="display:flex;gap:6px;">
-          <button class="icon-btn" onclick="goTo('profile')" aria-label="Your profile">&#128100;</button>
-          <button class="icon-btn" onclick="goTo('matches')" aria-label="Your matches">&#9825;</button>
-          <button class="icon-btn" onclick="goTo('places')" aria-label="Browse open places">&#8962;</button>
           <button class="icon-btn" onclick="resetDeck()" aria-label="Restart deck">&#8635;</button>
         </div>
       </div>
@@ -637,6 +650,19 @@
         <div id="matchInner"></div>
       </div>
     </div>
+
+    <!-- Bottom tab bar: sits above whichever main screen is active (deck/matches/places/profile);
+         hidden during the linear welcome->quiz->type->verify onboarding flow -->
+    <div class="tab-bar" id="tabBar">
+      <button class="tab-btn" data-tab="deck" onclick="goTo('deck')" aria-label="Discover">
+        <span class="tab-icon">&#128293;</span>Discover</button>
+      <button class="tab-btn" data-tab="matches" onclick="goTo('matches')" aria-label="Your matches">
+        <span class="tab-icon">&#9825;</span>Matches</button>
+      <button class="tab-btn" data-tab="places" onclick="goTo('places')" aria-label="Browse open places">
+        <span class="tab-icon">&#8962;</span>Places</button>
+      <button class="tab-btn" data-tab="profile" onclick="goTo('profile')" aria-label="Your profile">
+        <span class="tab-icon">&#128100;</span>Profile</button>
+    </div>
   </div>
 </div>
 
@@ -656,6 +682,7 @@
       document.querySelector('.screen[data-screen="'+s+'"]').classList.toggle('active', s===name);
     });
     updateDemoNav();
+    updateTabBar();
     if(name==="quiz" && qIndex===0){ renderQuestion(); }
     if(name==="type"){ renderTypeScreen(); }
     if(name==="verify"){ renderVerifyScreen(); }
@@ -664,6 +691,18 @@
     if(name==="profile"){ renderProfileScreen(); }
   }
   window.goTo = goTo;
+
+  // ---------------- Bottom tab bar (Discover/Matches/Places/Profile) -- shown only on the
+  // 4 main screens, hidden during the linear welcome->quiz->type->verify onboarding flow ----------------
+  var tabBar = document.getElementById('tabBar');
+  var tabScreens = ["deck","matches","places","profile"];
+  function updateTabBar(){
+    if(!tabBar) return;
+    tabBar.style.display = tabScreens.indexOf(current)>-1 ? 'flex' : 'none';
+    Array.prototype.forEach.call(tabBar.children, function(b){
+      b.classList.toggle('active', b.dataset.tab===current);
+    });
+  }
 
   // ---------------- Demo nav (lets Russell jump screens while reviewing) ----------------
   var demoNav = document.getElementById('demoNav');
@@ -1493,6 +1532,7 @@
   // init
   renderQuestion();
   updateDemoNav();
+  updateTabBar();
 })();
 </script>
 
