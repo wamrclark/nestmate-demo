@@ -261,7 +261,7 @@
   .verify-actions{width:100%;margin-top:auto;padding:14px 0 6px;}
 
   /* ---------- Screen 3: Deck ---------- */
-  .deck-wrap{flex:1;padding:0 18px 84px;display:flex;flex-direction:column;}
+  .deck-wrap{flex:1;padding:0 18px calc(64px + env(safe-area-inset-bottom, 0px));display:flex;flex-direction:column;}
   .sponsored-banner{
     display:flex;align-items:center;gap:10px;background:var(--paper-raised);border:1px solid var(--line);
     border-left:3px solid var(--sage);border-radius:14px;padding:10px 12px;margin-bottom:10px;flex-shrink:0;
@@ -277,7 +277,7 @@
   .sponsored-banner .icon-btn{width:26px;height:26px;font-size:13px;flex-shrink:0;}
 
   /* ---------- Places (heat map) screen ---------- */
-  .places-screen{padding:0 0 84px;}
+  .places-screen{padding:0 0 calc(64px + env(safe-area-inset-bottom, 0px));}
   .places-intro{padding:0 18px 10px;flex-shrink:0;}
   .places-intro p{color:var(--muted);font-size:12.5px;line-height:1.5;}
   .heatmap-canvas{
@@ -325,7 +325,7 @@
 
   /* ---------- Profile screen ---------- */
   .profile-screen{overflow:hidden;}
-  .profile-scroll{flex:1;min-height:0;overflow-y:auto;padding:0 20px 84px;}
+  .profile-scroll{flex:1;min-height:0;overflow-y:auto;padding:0 20px calc(64px + env(safe-area-inset-bottom, 0px));}
   .profile-demo-note{
     display:flex;align-items:flex-start;gap:8px;background:var(--sage-soft);color:var(--sage);
     border-radius:14px;padding:11px 14px;font-size:12px;font-weight:600;line-height:1.45;
@@ -555,7 +555,7 @@
         <span class="title">Your matches</span>
         <span style="width:34px"></span>
       </div>
-      <div id="matchesList" style="flex:1;overflow-y:auto;padding:0 18px 84px;display:flex;flex-direction:column;gap:10px;"></div>
+      <div id="matchesList" style="flex:1;overflow-y:auto;padding:0 18px calc(64px + env(safe-area-inset-bottom, 0px));display:flex;flex-direction:column;gap:10px;"></div>
 
       <div class="detail-overlay" id="matchDetailOverlay">
         <div class="app-top">
