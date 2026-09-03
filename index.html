@@ -9,7 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Nestmate">
 <meta name="theme-color" content="#F4425F">
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23F4425F'/%3E%3Cstop offset='1' stop-color='%23FF9472'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='120' height='120' rx='28' fill='url(%23g)'/%3E%3Ctext x='60' y='82' font-family='Georgia,serif' font-size='68' font-weight='700' fill='white' text-anchor='middle'%3EN%3C/text%3E%3C/svg%3E">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap">
 <style>
   :root{
@@ -325,17 +328,31 @@
 
   /* ---------- Profile screen ---------- */
   .profile-screen{padding:0 24px 84px;overflow-y:auto;}
-  .profile-avatar-wrap{
-    position:relative;width:100px;height:100px;margin:6px auto 18px;cursor:pointer;flex-shrink:0;
+  .profile-photos-label{
+    font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;
+    letter-spacing:0.04em;margin:14px 0 4px;text-align:left;
   }
-  .profile-avatar-wrap .avatar-fill{
-    width:100%;height:100%;border-radius:50%;font-size:34px;background-size:cover;background-position:center;
+  .profile-photos-hint{font-size:11.5px;color:var(--muted);text-align:left;margin-bottom:10px;}
+  .photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px;}
+  .photo-tile{
+    position:relative;aspect-ratio:1;border-radius:14px;overflow:hidden;background:var(--sage-soft);
   }
-  .profile-avatar-edit{
-    position:absolute;right:-2px;bottom:-2px;width:32px;height:32px;border-radius:50%;
-    background:var(--flame);color:#fff;display:flex;align-items:center;justify-content:center;
-    font-size:14px;border:3px solid var(--paper-raised);pointer-events:none;
+  .photo-tile img{width:100%;height:100%;object-fit:cover;display:block;}
+  .photo-tile .primary-badge{
+    position:absolute;bottom:5px;left:5px;font-size:9px;font-weight:700;color:#fff;
+    background:var(--flame);padding:2px 7px;border-radius:999px;letter-spacing:0.02em;
   }
+  .photo-tile .photo-remove{
+    position:absolute;top:4px;right:4px;width:22px;height:22px;border-radius:50%;
+    background:rgba(0,0,0,0.55);color:#fff;border:none;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;font-size:13px;line-height:1;
+  }
+  .photo-tile.add-tile{
+    display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2px;
+    border:1.5px dashed var(--line);background:var(--paper);cursor:pointer;color:var(--muted);
+    font-size:26px;font-weight:300;
+  }
+  .photo-tile.add-tile span.add-label{font-size:10px;font-weight:600;}
   .profile-field{margin-bottom:16px;text-align:left;}
   .profile-field label{
     display:block;font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;
@@ -573,11 +590,10 @@
         <span class="title">My profile</span>
         <span style="width:34px"></span>
       </div>
-      <input type="file" id="profilePhotoInput" accept="image/*" style="display:none">
-      <div class="profile-avatar-wrap" onclick="document.getElementById('profilePhotoInput').click()">
-        <div class="avatar-fill" id="profileAvatar"></div>
-        <div class="profile-avatar-edit">&#128247;</div>
-      </div>
+      <input type="file" id="profilePhotoInput" accept="image/*" multiple style="display:none">
+      <div class="profile-photos-label">Photos</div>
+      <div class="profile-photos-hint">Your first photo is your main one, shown on matches. Up to 6.</div>
+      <div class="photo-grid" id="photoGrid"></div>
       <div class="profile-field">
         <label for="profileName">Name</label>
         <input type="text" class="text-input" id="profileName" placeholder="e.g. Jordan">
@@ -993,45 +1009,54 @@
   }
   window.simulateAgeVerify = function(){ verifyState.age = true; renderVerifyScreen(); };
 
-  // ---------------- Your profile (photo + bio -- client-side only: the photo is read with
+  // ---------------- Your profile (photos + bio -- client-side only: each photo is read with
   // FileReader straight into memory as a data URL, never uploaded anywhere, and resets on
   // reload same as the rest of this prototype) ----------------
-  var profilePhoto = null;
+  var profilePhotos = [];
+  var MAX_PROFILE_PHOTOS = 6;
   var profileBio = '';
-  function renderProfileAvatar(){
-    var el = document.getElementById('profileAvatar');
-    if(!el) return;
-    if(profilePhoto){
-      el.style.background = '';
-      el.style.backgroundImage = 'url('+profilePhoto+')';
-      el.style.backgroundSize = 'cover';
-      el.style.backgroundPosition = 'center';
-      el.textContent = '';
-    } else {
-      el.style.backgroundImage = '';
-      var label = yourFirstName();
-      el.textContent = label==='You' ? '?' : label.charAt(0).toUpperCase();
-      el.style.background = 'linear-gradient(135deg,'+palettes[0][0]+','+palettes[0][1]+')';
+  function renderPhotoGrid(){
+    var grid = document.getElementById('photoGrid');
+    if(!grid) return;
+    var html = profilePhotos.map(function(src, i){
+      return '<div class="photo-tile">' +
+        '<img src="'+src+'" alt="Profile photo '+(i+1)+'">' +
+        (i===0 ? '<span class="primary-badge">Main</span>' : '') +
+        '<button class="photo-remove" onclick="removeProfilePhoto('+i+')" aria-label="Remove this photo">&times;</button>' +
+      '</div>';
+    }).join('');
+    if(profilePhotos.length < MAX_PROFILE_PHOTOS){
+      html += '<button class="photo-tile add-tile" onclick="document.getElementById(\'profilePhotoInput\').click()" aria-label="Add a photo">' +
+        '+<span class="add-label">Add</span></button>';
     }
+    grid.innerHTML = html;
   }
+  window.removeProfilePhoto = function(i){
+    profilePhotos.splice(i, 1);
+    renderPhotoGrid();
+  };
   function renderProfileScreen(){
     document.getElementById('profileName').value = (answers.yourName && answers.yourName!=='Not shared') ? answers.yourName : '';
     document.getElementById('profileOccupation').value = (answers.occupation && answers.occupation!=='Not shared') ? answers.occupation : '';
     document.getElementById('profileBio').value = profileBio;
     document.getElementById('profileSavedNote').innerHTML = '';
-    renderProfileAvatar();
+    renderPhotoGrid();
   }
   var profilePhotoInput = document.getElementById('profilePhotoInput');
   if(profilePhotoInput){
     profilePhotoInput.addEventListener('change', function(e){
-      var file = e.target.files && e.target.files[0];
-      if(!file) return;
-      var reader = new FileReader();
-      reader.onload = function(ev){
-        profilePhoto = ev.target.result;
-        renderProfileAvatar();
-      };
-      reader.readAsDataURL(file);
+      var files = Array.prototype.slice.call(e.target.files || []);
+      if(!files.length) return;
+      var remaining = MAX_PROFILE_PHOTOS - profilePhotos.length;
+      files.slice(0, remaining).forEach(function(file){
+        var reader = new FileReader();
+        reader.onload = function(ev){
+          profilePhotos.push(ev.target.result);
+          renderPhotoGrid();
+        };
+        reader.readAsDataURL(file);
+      });
+      profilePhotoInput.value = '';
     });
   }
   window.saveProfile = function(){
@@ -1405,8 +1430,8 @@
     var idx = profiles.indexOf(p);
     var youLabel = yourFirstName();
     var youInitial = youLabel==='You' ? 'You' : youLabel.charAt(0).toUpperCase();
-    var youStyle = profilePhoto ?
-      'background-image:url('+profilePhoto+');background-size:cover;background-position:center;color:transparent;' :
+    var youStyle = profilePhotos.length ?
+      'background-image:url('+profilePhotos[0]+');background-size:cover;background-position:center;color:transparent;' :
       'background:linear-gradient(135deg,#fff,#fff);color:var(--flame-ink);';
     return '<div class="match-avatars">' +
       '<div class="avatar-fill" style="width:78px;height:78px;border-radius:50%;font-size:'+(youLabel==='You'?26:30)+'px;'+youStyle+'">'+youInitial+'</div>' +
