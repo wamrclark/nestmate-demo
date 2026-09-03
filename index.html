@@ -322,6 +322,30 @@
     padding:14px;margin-top:14px;font-size:11.5px;line-height:1.65;white-space:pre-wrap;text-align:left;
     max-height:220px;overflow-y:auto;
   }
+
+  /* ---------- Profile screen ---------- */
+  .profile-screen{padding:0 24px 20px;overflow-y:auto;}
+  .profile-avatar-wrap{
+    position:relative;width:100px;height:100px;margin:6px auto 18px;cursor:pointer;flex-shrink:0;
+  }
+  .profile-avatar-wrap .avatar-fill{
+    width:100%;height:100%;border-radius:50%;font-size:34px;background-size:cover;background-position:center;
+  }
+  .profile-avatar-edit{
+    position:absolute;right:-2px;bottom:-2px;width:32px;height:32px;border-radius:50%;
+    background:var(--flame);color:#fff;display:flex;align-items:center;justify-content:center;
+    font-size:14px;border:3px solid var(--paper-raised);pointer-events:none;
+  }
+  .profile-field{margin-bottom:16px;text-align:left;}
+  .profile-field label{
+    display:block;font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;
+    letter-spacing:0.04em;margin-bottom:6px;
+  }
+  .bio-input{min-height:96px;resize:vertical;line-height:1.5;font-family:inherit;}
+  .profile-saved{
+    display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:var(--sage);
+    background:var(--sage-soft);border-radius:999px;padding:6px 13px;margin-top:12px;
+  }
   .deck-stack{flex:1;position:relative;margin-top:4px;}
   .card{
     position:absolute;inset:0;border-radius:26px;overflow:hidden;
@@ -526,6 +550,34 @@
       </div>
     </div>
 
+    <!-- Screen: Profile (photo + bio -- client-side only, nothing uploaded or stored anywhere) -->
+    <div class="screen profile-screen" data-screen="profile">
+      <div class="app-top">
+        <button class="icon-btn" onclick="goTo('deck')" aria-label="Back to swiping">&larr;</button>
+        <span class="title">My profile</span>
+        <span style="width:34px"></span>
+      </div>
+      <input type="file" id="profilePhotoInput" accept="image/*" style="display:none">
+      <div class="profile-avatar-wrap" onclick="document.getElementById('profilePhotoInput').click()">
+        <div class="avatar-fill" id="profileAvatar"></div>
+        <div class="profile-avatar-edit">&#128247;</div>
+      </div>
+      <div class="profile-field">
+        <label for="profileName">Name</label>
+        <input type="text" class="text-input" id="profileName" placeholder="e.g. Jordan">
+      </div>
+      <div class="profile-field">
+        <label for="profileOccupation">What you do</label>
+        <input type="text" class="text-input" id="profileOccupation" placeholder="e.g. Product designer">
+      </div>
+      <div class="profile-field">
+        <label for="profileBio">Bio</label>
+        <textarea class="text-input bio-input" id="profileBio" placeholder="Tell future roommates a bit about yourself&hellip;"></textarea>
+      </div>
+      <button class="btn btn-primary" onclick="saveProfile()">Save profile</button>
+      <div id="profileSavedNote"></div>
+    </div>
+
     <!-- Screen: Deck -->
     <div class="screen deck-wrap" data-screen="deck">
       <div class="app-top">
@@ -535,6 +587,7 @@
           <div id="deckSubtitle" style="font-size:11.5px;color:var(--muted);margin-top:2px;"></div>
         </div>
         <div style="display:flex;gap:6px;">
+          <button class="icon-btn" onclick="goTo('profile')" aria-label="Your profile">&#128100;</button>
           <button class="icon-btn" onclick="goTo('matches')" aria-label="Your matches">&#9825;</button>
           <button class="icon-btn" onclick="goTo('places')" aria-label="Browse open places">&#8962;</button>
           <button class="icon-btn" onclick="resetDeck()" aria-label="Restart deck">&#8635;</button>
@@ -594,7 +647,7 @@
 (function(){
   "use strict";
 
-  var screens = ["welcome","quiz","type","verify","deck","matches","places"];
+  var screens = ["welcome","quiz","type","verify","deck","matches","places","profile"];
   var current = "welcome";
 
   function goTo(name){
@@ -608,6 +661,7 @@
     if(name==="verify"){ renderVerifyScreen(); }
     if(name==="places"){ renderPlaces(); }
     if(name==="matches"){ renderMatchesList(); }
+    if(name==="profile"){ renderProfileScreen(); }
   }
   window.goTo = goTo;
 
@@ -899,6 +953,56 @@
     }
   }
   window.simulateAgeVerify = function(){ verifyState.age = true; renderVerifyScreen(); };
+
+  // ---------------- Your profile (photo + bio -- client-side only: the photo is read with
+  // FileReader straight into memory as a data URL, never uploaded anywhere, and resets on
+  // reload same as the rest of this prototype) ----------------
+  var profilePhoto = null;
+  var profileBio = '';
+  function renderProfileAvatar(){
+    var el = document.getElementById('profileAvatar');
+    if(!el) return;
+    if(profilePhoto){
+      el.style.background = '';
+      el.style.backgroundImage = 'url('+profilePhoto+')';
+      el.style.backgroundSize = 'cover';
+      el.style.backgroundPosition = 'center';
+      el.textContent = '';
+    } else {
+      el.style.backgroundImage = '';
+      var label = yourFirstName();
+      el.textContent = label==='You' ? '?' : label.charAt(0).toUpperCase();
+      el.style.background = 'linear-gradient(135deg,'+palettes[0][0]+','+palettes[0][1]+')';
+    }
+  }
+  function renderProfileScreen(){
+    document.getElementById('profileName').value = (answers.yourName && answers.yourName!=='Not shared') ? answers.yourName : '';
+    document.getElementById('profileOccupation').value = (answers.occupation && answers.occupation!=='Not shared') ? answers.occupation : '';
+    document.getElementById('profileBio').value = profileBio;
+    document.getElementById('profileSavedNote').innerHTML = '';
+    renderProfileAvatar();
+  }
+  var profilePhotoInput = document.getElementById('profilePhotoInput');
+  if(profilePhotoInput){
+    profilePhotoInput.addEventListener('change', function(e){
+      var file = e.target.files && e.target.files[0];
+      if(!file) return;
+      var reader = new FileReader();
+      reader.onload = function(ev){
+        profilePhoto = ev.target.result;
+        renderProfileAvatar();
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+  window.saveProfile = function(){
+    answers.yourName = document.getElementById('profileName').value.trim() || 'Not shared';
+    answers.occupation = document.getElementById('profileOccupation').value.trim() || 'Not shared';
+    profileBio = document.getElementById('profileBio').value.trim();
+    var titleEl = document.getElementById('deckTitle');
+    if(titleEl) titleEl.textContent = yourFirstName()==='You' ? 'Matches for you' : 'Matches for '+yourFirstName();
+    document.getElementById('profileSavedNote').innerHTML = '<div class="profile-saved">&#10003; Saved</div>';
+  };
 
   // ---------------- Sample profiles ----------------
   // "answers" mirror the scored quiz keys above (same option indices) so match % is
@@ -1262,8 +1366,11 @@
     var idx = profiles.indexOf(p);
     var youLabel = yourFirstName();
     var youInitial = youLabel==='You' ? 'You' : youLabel.charAt(0).toUpperCase();
+    var youStyle = profilePhoto ?
+      'background-image:url('+profilePhoto+');background-size:cover;background-position:center;color:transparent;' :
+      'background:linear-gradient(135deg,#fff,#fff);color:var(--flame-ink);';
     return '<div class="match-avatars">' +
-      '<div class="avatar-fill" style="width:78px;height:78px;border-radius:50%;font-size:'+(youLabel==='You'?26:30)+'px;background:linear-gradient(135deg,#fff,#fff);color:var(--flame-ink)">'+youInitial+'</div>' +
+      '<div class="avatar-fill" style="width:78px;height:78px;border-radius:50%;font-size:'+(youLabel==='You'?26:30)+'px;'+youStyle+'">'+youInitial+'</div>' +
       '<div class="avatar-fill" style="width:78px;height:78px;border-radius:50%;font-size:26px;background:linear-gradient(135deg,'+palettes[idx%palettes.length][0]+','+palettes[idx%palettes.length][1]+')">'+p.initials+'</div></div>';
   }
   var myMatches = [];
