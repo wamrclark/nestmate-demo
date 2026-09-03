@@ -58,8 +58,9 @@
   }
 
   *{box-sizing:border-box;}
-  html,body{height:100%;}
+  html{height:100%;background:var(--paper);}
   body{
+    height:100%;
     background:var(--paper);
     color:var(--ink);
     font-family:'Plus Jakarta Sans',system-ui,sans-serif;
@@ -69,6 +70,7 @@
     inset:0;
     width:100%;
     overflow:hidden;
+    overscroll-behavior:none;
     -webkit-text-size-adjust:100%;
   }
   h1,h2,h3{font-family:'Fraunces',Georgia,serif;text-wrap:balance;margin:0;}
@@ -627,7 +629,20 @@
         </div>
       </div>
       <button class="btn btn-primary" onclick="saveProfile()">Save profile</button>
+      <button class="btn btn-ghost" onclick="showMyProfilePreview()">&#128065; Preview as other people see it</button>
       <div id="profileSavedNote"></div>
+
+      <!-- Self-preview overlay: shows your own profile using the exact same card layout other
+           people see when they swipe on you, built live from whatever's currently in the fields
+           above (no need to Save first) -->
+      <div class="detail-overlay" id="myProfilePreviewOverlay">
+        <div class="app-top" style="position:relative;z-index:2;">
+          <button class="icon-btn" onclick="closeMyProfilePreview()" aria-label="Close preview">&larr;</button>
+          <span class="title">Your profile</span>
+          <span style="width:34px"></span>
+        </div>
+        <div class="detail-body" id="myProfilePreviewBody"></div>
+      </div>
     </div>
 
     <!-- Screen: Deck -->
@@ -1108,6 +1123,31 @@
     var titleEl = document.getElementById('deckTitle');
     if(titleEl) titleEl.textContent = yourFirstName()==='You' ? 'Matches for you' : 'Matches for '+yourFirstName();
     document.getElementById('profileSavedNote').innerHTML = '<div class="profile-saved">&#10003; Saved</div>';
+  };
+
+  // ---------------- Self-preview: how your profile card looks to other people -- built live
+  // from whatever's currently typed in the fields above, no need to Save first, using the same
+  // photo/name/occupation/type/bio a real match card shows. ----------------
+  window.showMyProfilePreview = function(){
+    var name = document.getElementById('profileName').value.trim() || 'You';
+    var occ = document.getElementById('profileOccupation').value.trim() || 'Not shared';
+    var bio = document.getElementById('profileBio').value.trim();
+    var type = computeType(answers);
+    var photo = profilePhotos[0];
+    var initial = name==='You' ? '?' : name.charAt(0).toUpperCase();
+    var photoHtml = photo ?
+      '<img src="'+photo+'" alt="Your main photo" style="width:100%;height:100%;object-fit:cover;display:block;">' :
+      '<div class="avatar-fill" style="width:100%;height:100%;font-size:56px;background:linear-gradient(135deg,'+palettes[0][0]+','+palettes[0][1]+');">'+initial+'</div>';
+    document.getElementById('myProfilePreviewBody').innerHTML =
+      '<div style="border-radius:20px;overflow:hidden;height:220px;position:relative;box-shadow:var(--shadow);margin-bottom:14px;">'+photoHtml+'</div>' +
+      '<h2 style="margin-bottom:4px;">'+name+'</h2>' +
+      '<div class="card-meta" style="margin-bottom:12px;">'+occ+'<span class="sep">&middot;</span>'+type.info.name+'</div>' +
+      '<p class="card-blurb">'+(bio || 'No bio yet &mdash; add one so future roommates get a feel for you.')+'</p>' +
+      '<div class="detail-note">This is how you\'ll appear to other people swiping &mdash; your main photo, name, occupation, roommate type, and bio.</div>';
+    document.getElementById('myProfilePreviewOverlay').classList.add('open');
+  };
+  window.closeMyProfilePreview = function(){
+    document.getElementById('myProfilePreviewOverlay').classList.remove('open');
   };
 
   // ---------------- Sample profiles ----------------
