@@ -1,0 +1,1392 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Nestmate App</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Nestmate">
+<meta name="theme-color" content="#F4425F">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23F4425F'/%3E%3Cstop offset='1' stop-color='%23FF9472'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='120' height='120' rx='28' fill='url(%23g)'/%3E%3Ctext x='60' y='82' font-family='Georgia,serif' font-size='68' font-weight='700' fill='white' text-anchor='middle'%3EN%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap">
+<style>
+  :root{
+    --ink:#201A2B;
+    --paper:#FFF9F4;
+    --paper-raised:#FFFFFF;
+    --flame:#F4425F;
+    --flame-ink:#7A0F26;
+    --sage:#3F6B57;
+    --sage-soft:#DCEBE2;
+    --muted:#8A8296;
+    --line:rgba(32,26,43,0.10);
+    --shadow:0 20px 50px -20px rgba(32,26,43,0.35);
+    --flame-rgb:244,66,95;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ink:#F4EFEA;
+      --paper:#171018;
+      --paper-raised:#231A26;
+      --flame:#FF6B82;
+      --flame-ink:#FFD3DA;
+      --sage:#7FBFA0;
+      --sage-soft:#233A30;
+      --muted:#B6ACC2;
+      --line:rgba(244,239,234,0.12);
+      --shadow:0 20px 50px -20px rgba(0,0,0,0.6);
+      --flame-rgb:255,107,130;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ink:#F4EFEA;
+    --paper:#171018;
+    --paper-raised:#231A26;
+    --flame:#FF6B82;
+    --flame-ink:#FFD3DA;
+    --sage:#7FBFA0;
+    --sage-soft:#233A30;
+    --muted:#B6ACC2;
+    --line:rgba(244,239,234,0.12);
+    --shadow:0 20px 50px -20px rgba(0,0,0,0.6);
+    --flame-rgb:255,107,130;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Plus Jakarta Sans',system-ui,sans-serif;
+    margin:0;
+    padding:0;
+    position:fixed;
+    inset:0;
+    width:100%;
+    overflow:hidden;
+    -webkit-text-size-adjust:100%;
+  }
+  h1,h2,h3{font-family:'Fraunces',Georgia,serif;text-wrap:balance;margin:0;}
+  .num{font-family:'Space Mono',monospace;font-variant-numeric:tabular-nums;}
+
+  /* ---------- Marketing header ---------- */
+  .brand-row{
+    display:flex;align-items:center;gap:10px;margin-bottom:6px;
+  }
+  .brand-mark{
+    width:34px;height:34px;border-radius:10px;
+    background:linear-gradient(135deg,var(--flame),#FF9472);
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-family:'Fraunces',serif;font-weight:700;font-size:18px;
+    box-shadow:0 6px 16px -6px rgba(var(--flame-rgb),0.6);
+  }
+  .brand-name{font-family:'Fraunces',serif;font-weight:600;font-size:20px;letter-spacing:-0.01em;}
+
+  .hero{
+    max-width:640px;text-align:center;margin:18px 0 30px;
+  }
+  .eyebrow{
+    display:inline-block;font-size:12px;letter-spacing:0.12em;text-transform:uppercase;
+    color:var(--sage);background:var(--sage-soft);border-radius:999px;padding:5px 12px;margin-bottom:16px;
+    font-weight:600;
+  }
+  .hero h1{font-size:clamp(30px,5vw,44px);line-height:1.08;font-weight:600;}
+  .hero h1 em{font-style:normal;color:var(--flame);}
+  .hero p{
+    color:var(--muted);font-size:16px;line-height:1.6;max-width:480px;margin:16px auto 0;
+  }
+  .hero-note{
+    margin-top:18px;font-size:13px;color:var(--muted);
+  }
+  .hero-note b{color:var(--ink);}
+
+  /* ---------- Trust & safety section ---------- */
+  .safety-section{width:100%;max-width:820px;margin-bottom:34px;}
+  .safety-head{max-width:520px;margin:0 auto 26px;text-align:center;}
+  .safety-head h2{font-size:clamp(22px,3.4vw,28px);margin-bottom:10px;}
+  .safety-head p{color:var(--muted);font-size:14.5px;line-height:1.6;}
+  .safety-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;}
+  .safety-card{
+    background:var(--paper-raised);border:1px solid var(--line);border-radius:18px;padding:20px;
+  }
+  .safety-icon{
+    width:34px;height:34px;border-radius:10px;background:var(--sage-soft);color:var(--sage);
+    display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;margin-bottom:12px;
+  }
+  .safety-card h3{font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:700;margin-bottom:6px;}
+  .safety-card p{color:var(--muted);font-size:13px;line-height:1.55;}
+  .safety-legal{text-align:center;font-size:11.5px;color:var(--muted);margin-top:22px;}
+
+  /* ---------- Phone frame (standalone: fills the real device screen) ---------- */
+  .stage{
+    width:100%;height:100%;display:flex;
+  }
+  .phone{
+    width:100%;height:100%;
+    background:var(--paper-raised);
+    border-radius:0;
+    border:none;
+    box-shadow:none;
+    position:relative;
+    overflow:hidden;
+    display:flex;flex-direction:column;
+  }
+  .notch{display:none;}
+  .screen{
+    position:absolute;
+    top:env(safe-area-inset-top, 0px);
+    right:env(safe-area-inset-right, 0px);
+    bottom:env(safe-area-inset-bottom, 0px);
+    left:env(safe-area-inset-left, 0px);
+    display:flex;flex-direction:column;
+    opacity:0;pointer-events:none;transform:translateY(8px);
+    transition:opacity .28s ease, transform .28s ease;
+  }
+  .screen.active{opacity:1;pointer-events:auto;transform:translateY(0);}
+
+  .app-top{
+    padding:20px 18px 12px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+  }
+  .app-top .title{font-family:'Fraunces',serif;font-weight:600;font-size:19px;}
+  .icon-btn{
+    width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--paper);
+    display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink);
+    font-size:15px;transition:background .15s;
+  }
+  .icon-btn:hover{background:var(--sage-soft);}
+  .icon-btn:focus-visible{outline:2px solid var(--flame);outline-offset:2px;}
+
+  /* ---------- Screen 1: Welcome (inside phone) ---------- */
+  .welcome{padding:0 26px;justify-content:center;align-items:center;text-align:center;gap:0;}
+  .welcome .brand-mark{width:56px;height:56px;font-size:26px;border-radius:16px;margin-bottom:18px;}
+  .welcome h2{font-size:24px;font-weight:600;margin-bottom:10px;}
+  .welcome p{color:var(--muted);font-size:14px;line-height:1.55;margin-bottom:20px;}
+  .pill-list{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-bottom:24px;}
+  .pill{
+    font-size:11.5px;border:1px solid var(--line);border-radius:999px;padding:5px 11px;color:var(--muted);
+  }
+
+  .btn{
+    font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:15px;
+    border:none;border-radius:16px;padding:15px 20px;cursor:pointer;width:100%;
+    transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .btn:active{transform:scale(0.98);}
+  .btn:focus-visible{outline:2px solid var(--flame);outline-offset:2px;}
+  .btn-primary{
+    background:linear-gradient(135deg,var(--flame),#FF8A65);color:#fff;
+    box-shadow:0 12px 24px -10px rgba(var(--flame-rgb),0.55);
+  }
+  .btn-primary:disabled{opacity:0.45;box-shadow:none;cursor:not-allowed;}
+  .btn-ghost{
+    background:transparent;color:var(--muted);border:1px solid var(--line);margin-top:10px;
+  }
+
+  /* ---------- Screen 2: Quiz ---------- */
+  .quiz{padding:0 22px 22px;flex:1;}
+  .progress-track{
+    height:5px;border-radius:99px;background:var(--sage-soft);overflow:hidden;margin:4px 0 18px;flex-shrink:0;
+  }
+  .progress-fill{height:100%;background:var(--sage);border-radius:99px;transition:width .3s ease;}
+  .q-wrap{flex:1;display:flex;flex-direction:column;overflow-y:auto;}
+  .q-eyebrow{font-size:12px;color:var(--muted);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px;}
+  .q-title{font-size:20px;font-weight:600;margin-bottom:18px;line-height:1.25;}
+  .q-hint{font-size:12.5px;color:var(--muted);margin:-10px 0 16px;line-height:1.5;}
+  .options{display:flex;flex-direction:column;gap:9px;}
+  .option{
+    text-align:left;border:1.5px solid var(--line);background:var(--paper);
+    border-radius:14px;padding:12px 15px;font-size:14px;font-weight:600;color:var(--ink);
+    cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;
+    transition:border-color .15s, background .15s;
+  }
+  .option span.sub{font-weight:400;color:var(--muted);font-size:12px;display:block;margin-top:2px;}
+  .option:hover{border-color:var(--flame);}
+  .option.selected{border-color:var(--flame);background:rgba(var(--flame-rgb),0.08);}
+  .option:focus-visible{outline:2px solid var(--flame);outline-offset:2px;}
+  .quiz-actions{margin-top:auto;padding-top:16px;flex-shrink:0;display:flex;flex-direction:column;}
+  .text-input{
+    width:100%;border:1.5px solid var(--line);border-radius:14px;padding:13px 15px;font-size:14.5px;
+    font-family:'Plus Jakarta Sans',sans-serif;background:var(--paper);color:var(--ink);margin-bottom:6px;
+  }
+  .text-input:focus{outline:none;border-color:var(--flame);}
+  .text-input::placeholder{color:var(--muted);}
+  .skip-link{
+    background:none;border:none;color:var(--muted);font-size:12.5px;
+    text-decoration:underline;text-underline-offset:3px;cursor:pointer;
+    padding:10px 0 2px;align-self:center;font-family:'Plus Jakarta Sans',sans-serif;
+  }
+  .skip-link:focus-visible{outline:2px solid var(--flame);outline-offset:2px;}
+
+  /* ---------- Type reveal screen ---------- */
+  .type-reveal{padding:0 24px;justify-content:center;align-items:center;text-align:center;overflow-y:auto;}
+  .type-code{
+    font-family:'Space Mono',monospace;font-size:12.5px;letter-spacing:0.14em;color:var(--sage);
+    background:var(--sage-soft);border-radius:999px;padding:5px 14px;margin-bottom:12px;font-weight:700;
+  }
+  .type-reveal h2{font-size:24px;margin-bottom:8px;}
+  .type-desc{color:var(--muted);font-size:13.5px;line-height:1.55;margin-bottom:16px;}
+  .type-basis{font-size:11px;color:var(--muted);line-height:1.5;margin-bottom:18px;
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:11px 2px;}
+  .spectrums{width:100%;display:flex;flex-direction:column;gap:13px;margin-bottom:22px;text-align:left;}
+  .spectrum-labels{display:flex;justify-content:space-between;font-size:10.5px;font-weight:700;
+    color:var(--muted);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px;}
+  .spectrum-track{position:relative;height:6px;border-radius:99px;background:var(--sage-soft);}
+  .spectrum-marker{position:absolute;top:50%;width:13px;height:13px;border-radius:50%;background:var(--flame);
+    border:2px solid var(--paper-raised);transform:translate(-50%,-50%);box-shadow:0 2px 6px rgba(0,0,0,0.25);}
+  .type-actions{width:100%;padding-bottom:6px;}
+
+  /* ---------- Verify screen ---------- */
+  .verify-screen{padding:0 24px;justify-content:flex-start;text-align:center;overflow-y:auto;}
+  .verify-screen h2{font-size:22px;margin:16px 0 8px;}
+  .verify-screen p.vp{color:var(--muted);font-size:13px;line-height:1.55;margin-bottom:18px;}
+  .pose-frame{
+    width:150px;height:150px;border-radius:50%;border:3px dashed var(--line);margin:6px auto 16px;
+    display:flex;align-items:center;justify-content:center;position:relative;background:var(--paper);
+  }
+  .pose-frame.confirmed{border-style:solid;border-color:var(--sage);}
+  .pose-frame .pose-glyph{font-size:44px;color:var(--muted);}
+  .pose-frame.confirmed .pose-glyph{color:var(--sage);}
+  .verify-status{
+    display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:var(--sage);
+    background:var(--sage-soft);border-radius:999px;padding:6px 13px;margin-bottom:18px;
+  }
+  .id-row{
+    border:1.5px dashed var(--line);border-radius:14px;padding:16px;text-align:left;margin-bottom:14px;
+  }
+  .id-row .id-title{font-weight:700;font-size:13.5px;margin-bottom:3px;}
+  .id-row .id-sub{color:var(--muted);font-size:12px;line-height:1.5;margin-bottom:10px;}
+  .badge-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:4px;}
+  .verify-actions{width:100%;margin-top:auto;padding:14px 0 6px;}
+
+  /* ---------- Screen 3: Deck ---------- */
+  .deck-wrap{flex:1;padding:0 18px 18px;display:flex;flex-direction:column;}
+  .sponsored-banner{
+    display:flex;align-items:center;gap:10px;background:var(--paper-raised);border:1px solid var(--line);
+    border-left:3px solid var(--sage);border-radius:14px;padding:10px 12px;margin-bottom:10px;flex-shrink:0;
+  }
+  .sponsored-banner.hidden{display:none;}
+  .sponsored-tag{
+    font-size:9.5px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--sage);
+    background:var(--sage-soft);border-radius:6px;padding:3px 6px;flex-shrink:0;
+  }
+  .sponsored-info{flex:1;min-width:0;}
+  .sponsored-title{font-size:12.5px;font-weight:700;}
+  .sponsored-sub{font-size:11px;color:var(--muted);margin-top:1px;}
+  .sponsored-banner .icon-btn{width:26px;height:26px;font-size:13px;flex-shrink:0;}
+
+  /* ---------- Places (heat map) screen ---------- */
+  .places-screen{padding:0;}
+  .places-intro{padding:0 18px 10px;flex-shrink:0;}
+  .places-intro p{color:var(--muted);font-size:12.5px;line-height:1.5;}
+  .heatmap-canvas{
+    position:relative;flex:1;margin:0 18px 14px;border-radius:20px;overflow:hidden;
+    background:var(--paper);border:1px solid var(--line);
+  }
+  .heat-blob{position:absolute;border-radius:50%;filter:blur(18px);pointer-events:none;}
+  .place-pin{
+    position:absolute;transform:translate(-50%,-100%);display:flex;flex-direction:column;
+    align-items:center;cursor:pointer;border:none;background:none;padding:0;
+  }
+  .place-pin .pin-price{
+    background:var(--ink);color:var(--paper);font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;
+    padding:4px 8px;border-radius:8px;white-space:nowrap;box-shadow:0 4px 10px rgba(0,0,0,0.3);
+  }
+  .place-pin .pin-stem{width:2px;height:9px;background:var(--ink);margin:0 auto;}
+  .place-pin.featured .pin-price{background:var(--flame);color:#fff;padding:5px 9px;font-size:11px;}
+  .place-pin.featured .pin-stem{background:var(--flame);}
+  .place-pin:focus-visible .pin-price{outline:2px solid var(--flame);outline-offset:2px;}
+  .place-legend{
+    display:flex;gap:14px;padding:0 18px 14px;flex-shrink:0;font-size:11px;color:var(--muted);
+  }
+  .place-legend span{display:flex;align-items:center;gap:5px;}
+  .legend-dot{width:8px;height:8px;border-radius:50%;}
+  .place-detail-body{padding:16px 20px 20px;}
+  .place-price{font-family:'Space Mono',monospace;font-size:26px;font-weight:700;color:var(--flame);}
+  .place-badges{display:flex;gap:6px;margin:8px 0 12px;flex-wrap:wrap;}
+
+  /* ---------- Matches list ---------- */
+  .match-row{
+    display:flex;align-items:center;gap:12px;background:var(--paper-raised);border:1px solid var(--line);
+    border-radius:16px;padding:12px;cursor:pointer;text-align:left;width:100%;font-family:inherit;
+  }
+  .match-row:focus-visible{outline:2px solid var(--flame);outline-offset:2px;}
+  .match-row .avatar-fill{width:48px;height:48px;border-radius:50%;font-size:18px;flex-shrink:0;}
+  .match-row .mr-info{flex:1;min-width:0;}
+  .match-row .mr-name{font-weight:700;font-size:14px;}
+  .match-row .mr-sub{font-size:11.5px;color:var(--muted);margin-top:1px;}
+  .match-row .mr-status{font-size:10.5px;font-weight:700;color:var(--sage);flex-shrink:0;text-align:right;}
+  .agreement-box{
+    background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:14px;
+    padding:14px;margin-top:14px;font-size:11.5px;line-height:1.65;white-space:pre-wrap;text-align:left;
+    max-height:220px;overflow-y:auto;
+  }
+  .deck-stack{flex:1;position:relative;margin-top:4px;}
+  .card{
+    position:absolute;inset:0;border-radius:26px;overflow:hidden;
+    background:var(--paper-raised);border:1px solid var(--line);box-shadow:var(--shadow);
+    display:flex;flex-direction:column;transition:transform .35s ease, opacity .35s ease;
+  }
+  .card-photo{
+    height:44%;position:relative;flex-shrink:0;
+    display:flex;align-items:flex-end;
+  }
+  .card-photo .avatar-fill{position:absolute;inset:0;}
+  .match-badge{
+    position:absolute;top:14px;right:14px;background:rgba(0,0,0,0.55);backdrop-filter:blur(6px);
+    color:#fff;font-family:'Space Mono',monospace;font-weight:700;font-size:13px;
+    padding:6px 11px;border-radius:999px;display:flex;align-items:center;gap:5px;
+  }
+  .match-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--sage);}
+  .card-name-row{
+    position:relative;z-index:2;padding:14px 16px;color:#fff;width:100%;
+    background:linear-gradient(to top, rgba(0,0,0,0.68), transparent);
+  }
+  .card-name-row h3{font-size:21px;color:#fff;font-weight:600;}
+  .card-name-row .loc{font-size:12.5px;opacity:0.85;margin-top:2px;}
+  .card-body{padding:13px 17px;flex:1;display:flex;flex-direction:column;gap:9px;overflow-y:auto;}
+  .card-meta{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+  .card-meta .sep{opacity:0.5;}
+  .highlight-row{display:flex;gap:6px;flex-wrap:wrap;}
+  .chip{
+    font-size:11.5px;font-weight:600;border-radius:999px;padding:4px 10px;
+    background:var(--sage-soft);color:var(--sage);
+  }
+  .chip.warn{background:rgba(var(--flame-rgb),0.12);color:var(--flame-ink);}
+  .verified-badge{
+    display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;
+    background:rgba(255,255,255,0.25);backdrop-filter:blur(4px);color:#fff;
+    border-radius:999px;padding:3px 9px;margin-left:8px;vertical-align:middle;
+  }
+  .verified-badge.on-light{background:var(--sage-soft);color:var(--sage);backdrop-filter:none;}
+  .card-blurb{font-size:12.5px;color:var(--muted);line-height:1.5;}
+
+  .deck-actions{
+    display:flex;justify-content:center;align-items:center;gap:18px;padding-top:14px;flex-shrink:0;
+  }
+  .round-btn{
+    width:56px;height:56px;border-radius:50%;border:1px solid var(--line);background:var(--paper-raised);
+    display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;
+    box-shadow:0 10px 20px -10px rgba(32,26,43,0.3);transition:transform .12s;
+  }
+  .round-btn:active{transform:scale(0.92);}
+  .round-btn:focus-visible{outline:2px solid var(--flame);outline-offset:2px;}
+  .round-btn.pass{color:var(--muted);}
+  .round-btn.info{width:44px;height:44px;font-size:16px;}
+  .round-btn.like{color:var(--flame);border-color:rgba(var(--flame-rgb),0.4);}
+
+  .empty-deck{
+    flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 30px;
+  }
+  .empty-deck h3{font-size:19px;margin-bottom:8px;}
+  .empty-deck p{color:var(--muted);font-size:13.5px;line-height:1.5;}
+
+  /* ---------- Match detail overlay ---------- */
+  .detail-overlay{
+    position:absolute;inset:0;background:var(--paper-raised);z-index:10;
+    transform:translateY(100%);transition:transform .32s cubic-bezier(.32,.72,0,1);
+    display:flex;flex-direction:column;
+  }
+  .detail-overlay.open{transform:translateY(0);}
+  .detail-photo{height:30%;position:relative;flex-shrink:0;}
+  .detail-body{flex:1;padding:16px 20px 20px;overflow-y:auto;}
+  .detail-score{
+    display:flex;align-items:baseline;gap:8px;margin-bottom:2px;
+  }
+  .detail-score .big{font-family:'Space Mono',monospace;font-size:32px;font-weight:700;color:var(--flame);}
+  .detail-meta{font-size:12.5px;color:var(--muted);margin:8px 0 4px;line-height:1.6;}
+  .bars{display:flex;flex-direction:column;gap:11px;margin-top:14px;}
+  .bar-row{display:flex;flex-direction:column;gap:5px;}
+  .bar-label{display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:var(--muted);}
+  .bar-label .priority{color:var(--flame);font-size:10.5px;letter-spacing:0.04em;text-transform:uppercase;margin-left:5px;}
+  .bar-track{height:7px;border-radius:99px;background:var(--sage-soft);overflow:hidden;}
+  .bar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--sage),var(--sage));}
+  .bar-fill.low{background:linear-gradient(90deg,var(--flame),#FF9472);}
+  .detail-note{font-size:11.5px;color:var(--muted);margin-top:14px;line-height:1.5;border-top:1px solid var(--line);padding-top:12px;}
+
+  /* ---------- It's a match ---------- */
+  .match-overlay{
+    position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:linear-gradient(160deg, rgba(var(--flame-rgb),0.96), rgba(122,15,38,0.96));
+    color:#fff;text-align:center;padding:0 30px;opacity:0;pointer-events:none;transition:opacity .25s ease;
+  }
+  .match-overlay.open{opacity:1;pointer-events:auto;}
+  .match-overlay h2{color:#fff;font-size:30px;margin-bottom:8px;}
+  .match-overlay p{color:rgba(255,255,255,0.85);font-size:14px;margin-bottom:26px;}
+  .match-avatars{display:flex;margin-bottom:22px;}
+  .match-avatars .avatar-fill{
+    width:78px;height:78px;border-radius:50%;border:3px solid #fff;box-shadow:0 6px 20px rgba(0,0,0,0.25);
+  }
+  .match-avatars .avatar-fill:nth-child(2){margin-left:-20px;}
+  .match-overlay .btn-primary{background:#fff;color:var(--flame-ink);box-shadow:none;}
+  .match-overlay .btn-ghost{border-color:rgba(255,255,255,0.4);color:#fff;}
+
+  .avatar-fill{
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-family:'Fraunces',serif;font-weight:600;
+  }
+
+  /* ---------- Nav dots (dev/demo aid) -- hidden in the standalone home-screen build ---------- */
+  .demo-nav{display:none;}
+  .footer-note{display:none;}
+
+  @media (prefers-reduced-motion:reduce){
+    .screen,.card,.detail-overlay,.match-overlay,.btn,.round-btn{transition:none !important;}
+  }
+</style>
+
+<div class="stage">
+  <div class="phone" id="phone">
+    <div class="notch"></div>
+
+    <!-- Screen: Welcome -->
+    <div class="screen welcome active" data-screen="welcome">
+      <div class="brand-mark">N</div>
+      <h2>Welcome to Nestmate</h2>
+      <p>Choose who you'd like to see, then a compatibility profile &mdash; lifestyle habits, budget, and background &mdash; ending in your roommate type. From there, our AI recommends and pairs you with the people it finds are the best fit, ranking your whole feed by that score. Skip anything you'd rather not answer.</p>
+      <div class="pill-list">
+        <span class="pill">Cleanliness</span>
+        <span class="pill">Sleep schedule</span>
+        <span class="pill">Guests</span>
+        <span class="pill">Temperature</span>
+        <span class="pill">Budget</span>
+        <span class="pill">Pets</span>
+        <span class="pill">Social style</span>
+        <span class="pill">Job & background</span>
+      </div>
+      <button class="btn btn-primary" onclick="goTo('quiz')">Take the compatibility quiz</button>
+    </div>
+
+    <!-- Screen: Quiz -->
+    <div class="screen quiz" data-screen="quiz">
+      <div class="app-top">
+        <button class="icon-btn" onclick="goTo('welcome')" aria-label="Back">&larr;</button>
+        <span class="title">Your profile</span>
+        <span style="width:34px"></span>
+      </div>
+      <div style="padding:0 22px;">
+        <div class="progress-track"><div class="progress-fill" id="qProgress" style="width:8%"></div></div>
+      </div>
+      <div class="q-wrap" id="qWrap"></div>
+    </div>
+
+    <!-- Screen: Type reveal -->
+    <div class="screen type-reveal" data-screen="type">
+      <div id="typeBody"></div>
+    </div>
+
+    <!-- Screen: Verify -->
+    <div class="screen verify-screen" data-screen="verify">
+      <div id="verifyBody"></div>
+    </div>
+
+    <!-- Screen: Matches (persistent record -- a match shouldn't vanish once you close the popup) -->
+    <div class="screen matches-screen" data-screen="matches">
+      <div class="app-top">
+        <button class="icon-btn" onclick="goTo('deck')" aria-label="Back to swiping">&larr;</button>
+        <span class="title">Your matches</span>
+        <span style="width:34px"></span>
+      </div>
+      <div id="matchesList" style="flex:1;overflow-y:auto;padding:0 18px 18px;display:flex;flex-direction:column;gap:10px;"></div>
+
+      <div class="detail-overlay" id="matchDetailOverlay">
+        <div class="app-top">
+          <button class="icon-btn" onclick="closeMatchDetail()" aria-label="Close">&larr;</button>
+          <span class="title">Connect</span>
+          <span style="width:34px"></span>
+        </div>
+        <div class="detail-body" id="matchDetailBody"></div>
+      </div>
+    </div>
+
+    <!-- Screen: Places (heat map of open apartments -- landlords pay to be featured here) -->
+    <div class="screen places-screen" data-screen="places">
+      <div class="app-top">
+        <button class="icon-btn" onclick="goTo('deck')" aria-label="Back to matches">&larr;</button>
+        <span class="title">Open places</span>
+        <span style="width:34px"></span>
+      </div>
+      <div class="places-intro">
+        <p>Where units are actually open right now, near you. Featured pins are paid placements from local landlords &mdash; that's how Nestmate stays free to use.</p>
+      </div>
+      <div class="heatmap-canvas" id="heatmapCanvas"></div>
+      <div class="place-legend">
+        <span><span class="legend-dot" style="background:var(--sage);"></span>More units open</span>
+        <span><span class="legend-dot" style="background:var(--flame);"></span>Featured listing</span>
+      </div>
+
+      <div class="detail-overlay" id="placeOverlay">
+        <div class="app-top">
+          <button class="icon-btn" onclick="closePlace()" aria-label="Close listing">&larr;</button>
+          <span class="title">Listing</span>
+          <span style="width:34px"></span>
+        </div>
+        <div class="place-detail-body" id="placeBody"></div>
+      </div>
+    </div>
+
+    <!-- Screen: Deck -->
+    <div class="screen deck-wrap" data-screen="deck">
+      <div class="app-top">
+        <div>
+          <span class="title" id="deckTitle">Matches for you</span>
+          <div style="font-size:10.5px;color:var(--sage);font-weight:700;letter-spacing:0.02em;margin-top:1px;">AI-recommended &middot; ranked for best fit</div>
+          <div id="deckSubtitle" style="font-size:11.5px;color:var(--muted);margin-top:2px;"></div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button class="icon-btn" onclick="goTo('matches')" aria-label="Your matches">&#9825;</button>
+          <button class="icon-btn" onclick="goTo('places')" aria-label="Browse open places">&#8962;</button>
+          <button class="icon-btn" onclick="resetDeck()" aria-label="Restart deck">&#8635;</button>
+        </div>
+      </div>
+      <div class="sponsored-banner" id="sponsoredBanner" onclick="goTo('places')" role="button" tabindex="0" style="cursor:pointer;">
+        <span class="sponsored-tag">Sponsored</span>
+        <div class="sponsored-info">
+          <div class="sponsored-title">214 Elm Street &middot; $1,450/mo</div>
+          <div class="sponsored-sub">Cobblestone Realty &middot; see it on the open-places map &rarr;</div>
+        </div>
+        <button class="icon-btn" onclick="dismissBanner(event)" aria-label="Dismiss listing">&times;</button>
+      </div>
+      <div class="deck-stack" id="deckStack"></div>
+      <div class="deck-actions">
+        <button class="round-btn pass" onclick="swipeTop('pass')" aria-label="Pass">&times;</button>
+        <button class="round-btn info" onclick="openDetail()" aria-label="View compatibility details">i</button>
+        <button class="round-btn like" onclick="swipeTop('like')" aria-label="Like">&hearts;</button>
+      </div>
+      <div style="text-align:center;padding-top:2px;">
+        <button class="skip-link" onclick="openReport()">Report this profile</button>
+      </div>
+
+      <!-- Match detail overlay -->
+      <div class="detail-overlay" id="detailOverlay">
+        <div class="app-top" style="position:relative;z-index:2;">
+          <button class="icon-btn" onclick="closeDetail()" aria-label="Close details">&larr;</button>
+          <span class="title">Compatibility</span>
+          <span style="width:34px"></span>
+        </div>
+        <div class="detail-photo" id="detailPhoto"></div>
+        <div class="detail-body" id="detailBody"></div>
+      </div>
+
+      <!-- Report overlay -->
+      <div class="detail-overlay" id="reportOverlay" style="z-index:15;">
+        <div class="app-top">
+          <button class="icon-btn" onclick="closeReport()" aria-label="Close report">&larr;</button>
+          <span class="title">Report profile</span>
+          <span style="width:34px"></span>
+        </div>
+        <div class="detail-body" id="reportBody"></div>
+      </div>
+
+      <!-- It's a match overlay -->
+      <div class="match-overlay" id="matchOverlay">
+        <div id="matchInner"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="demo-nav" id="demoNav"></div>
+<div class="footer-note">App-only view of the Nestmate prototype &mdash; clickable concept demo, sample data, nothing is saved.</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var screens = ["welcome","quiz","type","verify","deck","matches","places"];
+  var current = "welcome";
+
+  function goTo(name){
+    current = name;
+    screens.forEach(function(s){
+      document.querySelector('.screen[data-screen="'+s+'"]').classList.toggle('active', s===name);
+    });
+    updateDemoNav();
+    if(name==="quiz" && qIndex===0){ renderQuestion(); }
+    if(name==="type"){ renderTypeScreen(); }
+    if(name==="verify"){ renderVerifyScreen(); }
+    if(name==="places"){ renderPlaces(); }
+    if(name==="matches"){ renderMatchesList(); }
+  }
+  window.goTo = goTo;
+
+  // ---------------- Demo nav (lets Russell jump screens while reviewing) ----------------
+  var demoNav = document.getElementById('demoNav');
+  screens.forEach(function(s){
+    var b = document.createElement('button');
+    b.textContent = s.charAt(0).toUpperCase()+s.slice(1);
+    b.onclick = function(){ goTo(s); };
+    b.dataset.screen = s;
+    demoNav.appendChild(b);
+  });
+  function updateDemoNav(){
+    Array.prototype.forEach.call(demoNav.children, function(b){
+      b.classList.toggle('on', b.dataset.screen===current);
+    });
+  }
+
+  // ---------------- Avatar helper (initials on gradient, no external images) ----------------
+  var palettes = [
+    ['#F4425F','#FF8A65'], ['#3F6B57','#8FBFA0'], ['#5B5FA6','#9AA0E0'],
+    ['#C97A3D','#E8B25B'], ['#3E7C8C','#7FC8D6'], ['#A34D74','#E896B8']
+  ];
+
+  // ---------------- Quiz data ----------------
+  // Scored questions map to a "compatibility axis" (weight = how much research/practice says
+  // it matters for roommate fit; cleanliness/bedtime/noise rank highest per dorm-matching studies).
+  // Info questions (relationship, occupation, previous roommates) aren't distance-scored --
+  // like a dating-app bio, they add context rather than a pass/fail axis.
+  var questions = [
+    {key:'yourName', type:'text', weight:0, title:"What's your first name?", eyebrow:'About you',
+      placeholder:'e.g. Jordan'},
+    {key:'seeking', type:'choice', weight:0, title:'Who would you like to see as potential roommates?', eyebrow:'About you',
+      opts:[
+        {label:'Women'},
+        {label:'Men'},
+        {label:'Everyone'}
+      ]},
+    {key:'orientationPref', type:'choice', weight:0, title:'Any preference around community?', eyebrow:'About you',
+      opts:[
+        {label:"Doesn't matter to me"},
+        {label:'Match me within the LGBTQ+ community', sub:"We'll prioritize roommates who share that community"}
+      ]},
+    {key:'clean', type:'choice', weight:1.4, title:'How would you describe your cleanliness?', eyebrow:'Home & habits',
+      opts:[
+        {label:'Tidy daily', sub:'Dishes done same day, everything has a place'},
+        {label:'Weekly reset', sub:'Some mess during the week, I clean it up on weekends'},
+        {label:'Relaxed', sub:"I don't stress about clutter"}
+      ]},
+    {key:'sleep', type:'choice', weight:1.3, title:"What's your sleep schedule like?", eyebrow:'Home & habits',
+      opts:[
+        {label:'Early bird', sub:'Asleep by 10-11pm, up early'},
+        {label:'Standard', sub:'Asleep by midnight, up by 8'},
+        {label:'Night owl', sub:'Up late, sleep in when I can'}
+      ]},
+    {key:'noise', type:'choice', weight:1.3, title:'How often do you have guests or overnight visitors?', eyebrow:'Home & habits',
+      opts:[
+        {label:'Rarely', sub:'Quiet home most nights'},
+        {label:'Sometimes', sub:'Occasional friends or a partner staying over'},
+        {label:'Often', sub:'Frequent guests, don\'t mind noise'}
+      ]},
+    {key:'temp', type:'choice', weight:0.8, title:"What's your ideal home temperature?", eyebrow:'Home & habits',
+      opts:[
+        {label:'On the cooler side', sub:'AC on, windows open, layers welcome'},
+        {label:'Right in the middle', sub:'No strong preference'},
+        {label:'Warm and cozy', sub:'Heat up, blankets over AC'}
+      ]},
+    {key:'budget', type:'choice', weight:1.0, title:"What's your monthly rent budget?", eyebrow:'Practical',
+      opts:[
+        {label:'$700 - $950'},
+        {label:'$950 - $1,300'},
+        {label:'$1,300+'}
+      ]},
+    {key:'pets', type:'choice', weight:0.9, title:'How do you feel about pets in the home?', eyebrow:'Practical',
+      opts:[
+        {label:'I have a pet / love pets', sub:'Fully on board with a furry roommate'},
+        {label:'Okay with pets', sub:"Fine with it, don't need one myself"},
+        {label:'Prefer no pets', sub:'Allergies or just prefer a pet-free home'}
+      ]},
+    {key:'smoking', type:'choice', weight:1.0, title:'Smoking or vaping in the home?', eyebrow:'Practical',
+      opts:[
+        {label:"Prefer smoke-free", sub:"Don't smoke, want a smoke-free home"},
+        {label:"Not bothered", sub:"Don't smoke, but it doesn't bother me"},
+        {label:'I smoke or vape sometimes'}
+      ]},
+    {key:'groceries', type:'choice', weight:0.7, title:'How do you like handling food and groceries?', eyebrow:'Home & habits',
+      opts:[
+        {label:'Fully separate', sub:'Own shelf, own groceries, own cooking times'},
+        {label:'Some sharing', sub:'Split staples, cook together occasionally'},
+        {label:'Mostly shared', sub:'Communal groceries and cooking'}
+      ]},
+    {key:'social', type:'choice', weight:0.8, title:'How do you like to spend time with roommates?', eyebrow:'Social',
+      opts:[
+        {label:'Mostly separate lives', sub:'Friendly hellos, keep to myself otherwise'},
+        {label:'Friendly but independent', sub:'Chat in common spaces, occasional hangouts'},
+        {label:'Want to become friends', sub:'Cook together, hang out regularly'}
+      ]},
+    {key:'conflict', type:'choice', weight:0.9, title:'How do you handle roommate conflict?', eyebrow:'Social',
+      opts:[
+        {label:"Talk it out right away", sub:"Direct conversation as soon as something's off"},
+        {label:'Bring it up when it feels right', sub:'Give it a beat, then talk or text'},
+        {label:'Let the small stuff go', sub:'Only raise it if it becomes a real problem'}
+      ]},
+    {key:'relationship', type:'choice', weight:0, title:"What's your relationship status?", eyebrow:'About you',
+      opts:[
+        {label:'Single'},
+        {label:'Dating / seeing someone'},
+        {label:'In a relationship, partner around often'}
+      ]},
+    {key:'prevRoommate', type:'choice', weight:0, title:'Have you lived with roommates before?', eyebrow:'About you',
+      opts:[
+        {label:'First time living with roommates'},
+        {label:'Yes, and it went well'},
+        {label:'Yes, and it was rough'},
+        {label:"I've mostly lived alone"}
+      ]},
+    {key:'occupation', type:'text', weight:0, title:'What do you do?', eyebrow:'About you',
+      placeholder:'e.g. Product designer, grad student, night-shift nurse'}
+  ];
+  var qIndex = 0;
+  var answers = {};
+  var qWrap = document.getElementById('qWrap');
+  var qProgress = document.getElementById('qProgress');
+
+  function renderQuestion(){
+    var q = questions[qIndex];
+    var skipLabel = q.weight>0 ? "Doesn't matter to me — I'm flexible" : 'Prefer not to say';
+    qProgress.style.width = Math.round(((qIndex+1)/questions.length)*100) + '%';
+    var html = '<div class="q-eyebrow">'+q.eyebrow+' &middot; '+(qIndex+1)+' of '+questions.length+'</div>';
+    html += '<h3 class="q-title">'+q.title+'</h3>';
+
+    if(q.type==='text'){
+      var existing = answers[q.key] || '';
+      html += '<input type="text" class="text-input" id="textInput" placeholder="'+q.placeholder+'" value="'+existing.replace(/"/g,'&quot;')+'">';
+      html += '<div class="q-hint">Shown on your profile &mdash; helps matches picture your day-to-day.</div>';
+      html += '<div class="quiz-actions">' +
+        (qIndex>0 ? '<button class="btn btn-ghost" onclick="prevQuestion()">Back</button>' : '') +
+        '<button class="btn btn-primary" style="margin-top:'+(qIndex>0?'10px':'0')+'" onclick="submitText()">' +
+        (qIndex < questions.length-1 ? 'Continue' : 'See my type') + '</button>' +
+        '<button class="skip-link" onclick="skipQuestion()">'+skipLabel+'</button></div>';
+      qWrap.innerHTML = html;
+      var input = document.getElementById('textInput');
+      input.focus();
+      input.addEventListener('keydown', function(e){ if(e.key==='Enter') submitText(); });
+      return;
+    }
+
+    html += '<div class="options">';
+    q.opts.forEach(function(o, i){
+      var selected = answers[q.key]===i ? ' selected' : '';
+      html += '<button class="option'+selected+'" onclick="selectOption('+i+')">'+
+        '<span>'+o.label+(o.sub ? '<span class="sub">'+o.sub+'</span>' : '')+'</span></button>';
+    });
+    html += '</div>';
+    html += '<div class="quiz-actions">' +
+      (qIndex>0 ? '<button class="btn btn-ghost" onclick="prevQuestion()">Back</button>' : '') +
+      '<button class="skip-link" onclick="skipQuestion()">'+skipLabel+'</button></div>';
+    qWrap.innerHTML = html;
+  }
+
+  function advance(){
+    if(qIndex < questions.length-1){
+      qIndex++;
+      renderQuestion();
+    } else {
+      goTo('type');
+    }
+  }
+
+  window.selectOption = function(i){
+    var q = questions[qIndex];
+    answers[q.key] = i;
+    advance();
+  };
+  window.submitText = function(){
+    var q = questions[qIndex];
+    var val = document.getElementById('textInput').value.trim();
+    answers[q.key] = val || 'Not shared';
+    advance();
+  };
+  window.skipQuestion = function(){
+    var q = questions[qIndex];
+    delete answers[q.key];
+    advance();
+  };
+  window.prevQuestion = function(){
+    if(qIndex>0){ qIndex--; renderQuestion(); }
+  };
+
+  // ---------------- Roommate type engine ----------------
+  // Four axes drawn from constructs cohabitation research points to as most predictive of
+  // roommate satisfaction: conscientiousness/orderliness (Big Five), chronotype (morningness-
+  // eveningness), social energy (extraversion), and conflict-resolution style. Skipped questions
+  // fall back to a neutral midpoint rather than skewing the read.
+  var archetypes = {
+    SACD:{name:'The Household Captain', desc:"Structured, up early, likes people around, and says something the moment it's off. Keeps a shared home running like clockwork."},
+    SACE:{name:'The Warm Host', desc:'Organized and social, but lets the small stuff slide to keep things easy. The one who remembers everyone’s coffee order.'},
+    SALD:{name:'The Quiet Operator', desc:'Structured, early, and private. Says what needs saying, once, and moves on.'},
+    SALE:{name:'The Steady Anchor', desc:'Dependable and orderly, low-key, easy to build a routine around without much friction.'},
+    SPCD:{name:'The Night Producer', desc:'Structured but nocturnal &mdash; runs a tight ship after dark and speaks up fast when something needs fixing.'},
+    SPCE:{name:'The Late Host', desc:'Tidy night owl who loves company and rarely sweats the small stuff.'},
+    SPLD:{name:'The Night Architect', desc:'Precise, private, up late, and direct. Prefers a clean home and a closed door.'},
+    SPLE:{name:'The Quiet Owl', desc:'Orderly loner on a night schedule who avoids friction whenever possible.'},
+    FACD:{name:'The Straight Shooter', desc:'Relaxed about mess, up early, enjoys company, and addresses issues head-on instead of letting them build.'},
+    FACE:{name:'The Sunshine Roommate', desc:'Easygoing morning person who loves company and lets most things go. Low-drama by default.'},
+    FALD:{name:'The Early Realist', desc:'Relaxed about clutter, an early riser, keeps to themselves, and communicates directly when it matters.'},
+    FALE:{name:'The Gentle Riser', desc:'Laid-back early bird, quiet, avoids friction &mdash; the easiest possible person to share a kitchen with.'},
+    FPCD:{name:'The Free Spirit Host', desc:'Relaxed, nocturnal, loves people around, and will tell you straight if something’s bothering them.'},
+    FPCE:{name:'The Social Wanderer', desc:'Easygoing, up late, social, and happy to go with the flow.'},
+    FPLD:{name:'The Midnight Realist', desc:'Relaxed about mess, up late, private, and direct when it counts.'},
+    FPLE:{name:'The Easy Drifter', desc:'The most laid-back combination on the wheel: flexible, nocturnal, independent, and conflict-avoidant.'}
+  };
+  function axisVal(ans,key){ return ans.hasOwnProperty(key) ? ans[key] : 1; }
+  function computeType(ans){
+    var orderAvg = (axisVal(ans,'clean')+axisVal(ans,'groceries'))/2;
+    var order = orderAvg < 1 ? 'S' : 'F';
+    var sleepVal = axisVal(ans,'sleep');
+    var rhythm = sleepVal <= 1 ? 'A' : 'P';
+    var socialAvg = (axisVal(ans,'social')+axisVal(ans,'noise'))/2;
+    var social = socialAvg >= 1 ? 'C' : 'L';
+    var conflictVal = axisVal(ans,'conflict');
+    var conflict = conflictVal <= 0 ? 'D' : 'E';
+    var code = order+rhythm+social+conflict;
+    return {
+      code: code,
+      info: archetypes[code],
+      axes: [
+        {left:'Structured', right:'Flexible', value:orderAvg, active:order},
+        {left:'Early bird', right:'Night owl', value:sleepVal, active:rhythm==='A'?'left':'right'},
+        {left:'Independent', right:'Connector', value:socialAvg, active:social==='C'?'right':'left'},
+        {left:'Direct', right:'Easygoing', value:conflictVal, active:conflict==='D'?'left':'right'}
+      ]
+    };
+  }
+
+  var typeBody = document.getElementById('typeBody');
+  var deckSubtitle = document.getElementById('deckSubtitle');
+  var userType = null;
+  function renderTypeScreen(){
+    userType = computeType(answers);
+    var t = userType;
+    var bars = t.axes.map(function(a){
+      var pct = Math.max(4, Math.min(96, (a.value/2)*100));
+      return '<div>' +
+        '<div class="spectrum-labels"><span'+(a.active==='left'?' style="color:var(--flame)"':'')+'>'+a.left+'</span>' +
+        '<span'+(a.active==='right'?' style="color:var(--flame)"':'')+'>'+a.right+'</span></div>' +
+        '<div class="spectrum-track"><div class="spectrum-marker" style="left:'+pct+'%"></div></div></div>';
+    }).join('');
+    var nameLine = yourFirstName()!=='You' ? '<p class="type-desc" style="margin-bottom:2px;font-weight:700;color:var(--ink);">'+yourFirstName()+', you\'re&hellip;</p>' : '';
+    typeBody.innerHTML =
+      '<div class="type-code">'+t.code+'</div>' +
+      nameLine +
+      '<h2>'+t.info.name+'</h2>' +
+      '<p class="type-desc">'+t.info.desc+'</p>' +
+      '<div class="spectrums">'+bars+'</div>' +
+      '<div class="type-basis">Built from four roommate-compatibility dimensions cohabitation research points to as most predictive of satisfaction: orderliness, chronotype (natural sleep rhythm), social energy, and conflict style. Not a clinical assessment &mdash; a compatibility read, same spirit as a dorm housing questionnaire.</div>' +
+      '<div class="type-actions">' +
+        '<button class="btn btn-primary" onclick="goTo(\'verify\')">Continue</button>' +
+        '<button class="btn btn-ghost" onclick="retakeQuiz()">Retake the quiz</button>' +
+      '</div>';
+  }
+  window.retakeQuiz = function(){
+    qIndex = 0; answers = {};
+    goTo('quiz');
+  };
+
+  // ---------------- Verification (mocked -- no real photo/ID is captured or sent anywhere) ----------------
+  // Mandatory age check only, not identity/face verification. Deliberately narrow: an ID scan
+  // confirms date of birth (18+) and nothing else is extracted or retained -- no facial
+  // biometric template is created or matched, which keeps this out of biometric-privacy
+  // statutes (BIPA etc.) that a Face ID match would trigger. See roommate-match-app-terms-draft.md.
+  var verifyState = {age:false};
+  var verifyBody = document.getElementById('verifyBody');
+  function renderVerifyScreen(){
+    if(verifyState.age){
+      verifyBody.innerHTML =
+        '<h2>You\'re age-verified</h2>' +
+        '<div class="pose-frame confirmed"><span class="pose-glyph">&#10003;</span></div>' +
+        '<div class="verify-status">&#10003; Confirmed 18+</div>' +
+        '<p class="vp">Every Nestmate account confirms it\'s a real adult before matching. We only check that you\'re old enough &mdash; no facial verification, no photo ID kept on file.</p>' +
+        '<div class="verify-actions"><button class="btn btn-primary" onclick="buildDeck();goTo(\'deck\')">See my matches</button></div>';
+    } else {
+      verifyBody.innerHTML =
+        '<h2>Age verification required</h2>' +
+        '<p class="vp">Nestmate is 18+. Scan a government ID and we\'ll confirm your date of birth &mdash; that\'s all we check. No face match, no photo retained. Nothing is uploaded in this prototype.</p>' +
+        '<div class="id-row"><div class="id-title">Scan a government ID</div>' +
+        '<div class="id-sub">Processed by a third-party verification vendor to confirm you\'re 18+, then discarded &mdash; never stored by us.</div>' +
+        '<button class="btn btn-primary" style="margin-top:0;" onclick="simulateAgeVerify()">Simulate ID scan</button></div>';
+    }
+  }
+  window.simulateAgeVerify = function(){ verifyState.age = true; renderVerifyScreen(); };
+
+  // ---------------- Sample profiles ----------------
+  // "answers" mirror the scored quiz keys above (same option indices) so match % is
+  // computed from real answer distance, the same data a real signup would capture.
+  var profiles = [
+    {name:'Priya', age:26, loc:'2.1 mi away', initials:'P', verified:true, gender:'F', lgbtq:false, phone:'(609) 555-0142',
+     occupation:'Product designer', relationship:'Dating / seeing someone', prevRoommate:'Yes, and it went well',
+     blurb:"Home by 9pm most nights, keeps a tidy kitchen, has a very good dog named Miso.",
+     answers:{clean:0, sleep:0, noise:0, temp:1, budget:1, pets:0, smoking:0, groceries:1, social:1, conflict:0}},
+    {name:'Marcus', age:29, loc:'0.8 mi away', initials:'M', verified:true, gender:'M', lgbtq:true, phone:'(609) 555-0187',
+     occupation:'ICU nurse (rotating shifts)', relationship:'Single', prevRoommate:'First time living with roommates',
+     blurb:"Quiet at home, respects sleep schedules, prefers a pet-free space around odd hours.",
+     answers:{clean:1, sleep:2, noise:0, temp:0, budget:1, pets:2, smoking:0, groceries:1, social:0, conflict:1}},
+    {name:'Jordan', age:24, loc:'3.4 mi away', initials:'J', verified:true, gender:'M', lgbtq:true, phone:'(609) 555-0163',
+     occupation:'Grad student (biology)', relationship:'Single', prevRoommate:'Yes, and it was rough',
+     blurb:"Night owl, loves having friends over on weekends but keeps weekdays low-key.",
+     answers:{clean:2, sleep:2, noise:2, temp:2, budget:0, pets:1, smoking:1, groceries:2, social:2, conflict:2}},
+    {name:'Alina', age:31, loc:'1.5 mi away', initials:'A', verified:true, gender:'F', lgbtq:true, phone:'(609) 555-0128',
+     occupation:'Bakery owner', relationship:'In a relationship, partner around often', prevRoommate:"I've mostly lived alone",
+     blurb:"Up before dawn, spotless kitchen (occupational hazard), keeps her own groceries.",
+     answers:{clean:0, sleep:0, noise:1, temp:0, budget:2, pets:1, smoking:0, groceries:0, social:0, conflict:0}},
+    {name:'Devon', age:27, loc:'4.0 mi away', initials:'D', verified:true, gender:'M', lgbtq:true, phone:'(609) 555-0175',
+     occupation:'Software engineer (remote)', relationship:'Dating / seeing someone', prevRoommate:'Yes, and it went well',
+     blurb:"Balanced routine, cooks a lot, wouldn't mind splitting a grocery run.",
+     answers:{clean:1, sleep:1, noise:1, temp:1, budget:1, pets:0, smoking:1, groceries:1, social:1, conflict:1}},
+    {name:'Sofia', age:23, loc:'1.2 mi away', initials:'S', verified:true, gender:'F', lgbtq:false, phone:'(609) 555-0119',
+     occupation:'Marketing coordinator', relationship:'Single', prevRoommate:'Yes, and it went well',
+     blurb:"Weekend hiker, plant mom, likes a clean living room but a messy desk is fine.",
+     answers:{clean:0, sleep:0, noise:1, temp:1, budget:2, pets:0, smoking:0, groceries:1, social:1, conflict:0}},
+    {name:'Tariq', age:30, loc:'2.7 mi away', initials:'T', verified:true, gender:'M', lgbtq:false, phone:'(609) 555-0204',
+     occupation:'Civil engineer', relationship:'Married', prevRoommate:"I've mostly lived alone",
+     blurb:"Early riser, quiet evenings, keeps to a strict budget and expects the same.",
+     answers:{clean:0, sleep:0, noise:0, temp:0, budget:0, pets:2, smoking:0, groceries:0, social:0, conflict:1}},
+    {name:'Nina', age:25, loc:'0.5 mi away', initials:'N', verified:true, gender:'F', lgbtq:true, phone:'(609) 555-0233',
+     occupation:'Graphic designer (freelance)', relationship:'Single', prevRoommate:'Yes, and it was rough',
+     blurb:"Works odd hours, big on cozy hangouts, has two cats who run the apartment.",
+     answers:{clean:1, sleep:2, noise:2, temp:2, budget:1, pets:1, smoking:1, groceries:2, social:2, conflict:0}},
+    {name:'Owen', age:28, loc:'5.1 mi away', initials:'O', verified:true, gender:'M', lgbtq:false, phone:'(609) 555-0261',
+     occupation:'High school teacher', relationship:'Dating / seeing someone', prevRoommate:'Yes, and it went well',
+     blurb:"Home for dinner most nights, tidy but not precious about it, easy to talk to.",
+     answers:{clean:1, sleep:0, noise:1, temp:1, budget:1, pets:0, smoking:0, groceries:1, social:1, conflict:0}},
+    {name:'Camila', age:22, loc:'3.0 mi away', initials:'C', verified:true, gender:'F', lgbtq:true, phone:'(609) 555-0288',
+     occupation:'Undergrad, senior year', relationship:'Single', prevRoommate:'First time living with roommates',
+     blurb:"Studies late, loves having people over on weekends, flexible about almost everything.",
+     answers:{clean:2, sleep:2, noise:2, temp:1, budget:0, pets:0, smoking:1, groceries:2, social:2, conflict:2}},
+    {name:'Wes', age:32, loc:'1.8 mi away', initials:'W', verified:true, gender:'M', lgbtq:false, phone:'(609) 555-0317',
+     occupation:'Physical therapist', relationship:'Single', prevRoommate:'Yes, and it went well',
+     blurb:"Gym at 6am, meal preps on Sundays, keeps shared spaces spotless.",
+     answers:{clean:0, sleep:0, noise:0, temp:0, budget:1, pets:1, smoking:0, groceries:0, social:0, conflict:0}},
+    {name:'Harper', age:26, loc:'4.4 mi away', initials:'H', verified:true, gender:'F', lgbtq:true, phone:'(609) 555-0345',
+     occupation:'Veterinary tech', relationship:'In a relationship, partner around often', prevRoommate:'Yes, and it went well',
+     blurb:"Loves animals (obviously), quiet homebody, respectful about shared space and noise.",
+     answers:{clean:0, sleep:1, noise:0, temp:1, budget:1, pets:2, smoking:0, groceries:1, social:0, conflict:0}},
+    {name:'Elijah', age:24, loc:'2.3 mi away', initials:'E', verified:true, gender:'M', lgbtq:true, phone:'(609) 555-0372',
+     occupation:'Barista / musician', relationship:'Single', prevRoommate:'Yes, and it was rough',
+     blurb:"Night owl, plays guitar with headphones after 10, laid-back about almost everything.",
+     answers:{clean:2, sleep:2, noise:1, temp:2, budget:0, pets:1, smoking:2, groceries:2, social:1, conflict:2}},
+    {name:'Ava', age:29, loc:'0.9 mi away', initials:'A', verified:true, gender:'F', lgbtq:false, phone:'(609) 555-0398',
+     occupation:'Accountant', relationship:'Single', prevRoommate:"I've mostly lived alone",
+     blurb:"Structured routine, likes a clean kitchen, keeps mostly to herself on weekdays.",
+     answers:{clean:0, sleep:0, noise:0, temp:0, budget:1, pets:0, smoking:0, groceries:0, social:0, conflict:1}},
+    {name:'Malik', age:27, loc:'3.6 mi away', initials:'M', verified:true, gender:'M', lgbtq:false, phone:'(609) 555-0421',
+     occupation:'Sales rep, travels often', relationship:'Dating / seeing someone', prevRoommate:'Yes, and it went well',
+     blurb:"Gone a lot for work, easygoing when home, happy to split groceries.",
+     answers:{clean:1, sleep:1, noise:1, temp:1, budget:2, pets:1, smoking:0, groceries:1, social:1, conflict:1}},
+    {name:'Ruby', age:23, loc:'1.4 mi away', initials:'R', verified:true, gender:'F', lgbtq:true, phone:'(609) 555-0455',
+     occupation:'Nonprofit coordinator', relationship:'Single', prevRoommate:'First time living with roommates',
+     blurb:"Social and warm, always down for a shared dinner, tries to keep things tidy.",
+     answers:{clean:1, sleep:1, noise:2, temp:1, budget:1, pets:1, smoking:0, groceries:2, social:2, conflict:0}},
+    {name:'Caleb', age:31, loc:'4.8 mi away', initials:'C', verified:true, gender:'M', lgbtq:false, phone:'(609) 555-0483',
+     occupation:'Data analyst (remote)', relationship:'Married', prevRoommate:"I've mostly lived alone",
+     blurb:"Quiet home office setup, prefers minimal disruption, very direct communicator.",
+     answers:{clean:0, sleep:0, noise:0, temp:1, budget:1, pets:2, smoking:0, groceries:0, social:0, conflict:2}},
+    {name:'Isla', age:25, loc:'2.0 mi away', initials:'I', verified:true, gender:'F', lgbtq:true, phone:'(609) 555-0509',
+     occupation:'UX researcher', relationship:'Dating / seeing someone', prevRoommate:'Yes, and it went well',
+     blurb:"Balanced and considerate, likes a mid-week hangout but respects quiet time too.",
+     answers:{clean:1, sleep:1, noise:1, temp:1, budget:1, pets:1, smoking:0, groceries:1, social:1, conflict:0}},
+    {name:'Theo', age:26, loc:'5.5 mi away', initials:'T', verified:true, gender:'M', lgbtq:true, phone:'(609) 555-0536',
+     occupation:'Chef (evening shifts)', relationship:'Single', prevRoommate:'Yes, and it went well',
+     blurb:"Home late, cooks incredible food, doesn't mind noise but keeps the kitchen clean after.",
+     answers:{clean:0, sleep:2, noise:1, temp:2, budget:1, pets:0, smoking:0, groceries:0, social:1, conflict:1}}
+  ];
+  profiles.forEach(function(p){ p.type = computeType(p.answers); });
+
+  var scoredKeys = questions.filter(function(q){ return q.weight>0; });
+  var optCount = {};
+  scoredKeys.forEach(function(q){
+    optCount[q.key] = q.opts.length;
+  });
+  var friendlyLabel = {
+    clean:['Cleanliness match','Cleanliness gap'],
+    sleep:['Same sleep rhythm','Different sleep rhythms'],
+    noise:['Similar guest habits','Different guest habits'],
+    temp:['Same temp preference','Temp preference differs'],
+    budget:['Budget aligned','Budget gap'],
+    pets:['Aligned on pets','Pets mismatch'],
+    smoking:['Matches on smoking','Smoking mismatch'],
+    groceries:['Similar kitchen style','Different kitchen styles'],
+    social:['Similar social style','Different social styles'],
+    conflict:['Similar conflict style','Different conflict styles']
+  };
+  var barTitle = {
+    clean:'Cleanliness', sleep:'Sleep schedule', noise:'Guests & noise', temp:'Temperature',
+    budget:'Budget fit', pets:'Pets', smoking:'Smoking', groceries:'Groceries', social:'Social style', conflict:'Conflict style'
+  };
+
+  function categoryScores(p){
+    var out = {};
+    scoredKeys.forEach(function(q){
+      var k = q.key;
+      if(answers.hasOwnProperty(k) && p.answers.hasOwnProperty(k)){
+        var maxDist = optCount[k]-1;
+        var dist = Math.abs(answers[k]-p.answers[k]);
+        out[k] = Math.round(100 - (dist/maxDist)*100);
+      }
+    });
+    return out;
+  }
+
+  function matchScore(p){
+    var scores = categoryScores(p);
+    var keys = Object.keys(scores);
+    if(keys.length===0) return 78;
+    var total=0, wsum=0;
+    keys.forEach(function(k){
+      var w = questions.filter(function(q){return q.key===k;})[0].weight;
+      total += scores[k]*w;
+      wsum += w;
+    });
+    return Math.round(total/wsum);
+  }
+
+  function topChips(p){
+    var scores = categoryScores(p);
+    var entries = Object.keys(scores).map(function(k){ return {key:k, score:scores[k]}; });
+    entries.sort(function(a,b){ return b.score-a.score; });
+    var chips = [];
+    entries.slice(0,2).forEach(function(e){
+      if(e.score>=60) chips.push({label:friendlyLabel[e.key][0], warn:false});
+    });
+    var worst = entries[entries.length-1];
+    if(worst && worst.score<50 && chips.length<3) chips.push({label:friendlyLabel[worst.key][1], warn:true});
+    if(chips.length===0 && entries.length){
+      chips.push({label:friendlyLabel[entries[0].key][0], warn:false});
+    }
+    return chips;
+  }
+
+  var deckOrder = [];
+  var deckIdx = 0;
+  var deckStack = document.getElementById('deckStack');
+
+  var seekingLabels = ['Women','Men','Everyone'];
+  function buildDeck(){
+    var pool = profiles.slice();
+    var seekIdx = answers.hasOwnProperty('seeking') ? answers.seeking : 2; // default: Everyone
+    if(seekIdx===0) pool = pool.filter(function(p){ return p.gender==='F'; });
+    if(seekIdx===1) pool = pool.filter(function(p){ return p.gender==='M'; });
+    var lgbtqPref = answers.orientationPref === 1;
+    if(lgbtqPref) pool = pool.filter(function(p){ return p.lgbtq; });
+    deckOrder = pool.sort(function(a,b){ return matchScore(b)-matchScore(a); });
+    deckIdx = 0;
+    var deckTitleEl = document.getElementById('deckTitle');
+    if(deckTitleEl) deckTitleEl.textContent = yourFirstName()==='You' ? 'Matches for you' : 'Matches for '+yourFirstName();
+    if(userType){
+      var vBit = verifyState.age ? ' &middot; 18+ Verified' : '';
+      var commBit = lgbtqPref ? ' &middot; LGBTQ+ community' : '';
+      deckSubtitle.innerHTML = 'Your type: '+userType.info.name+' ('+userType.code+')'+vBit+' &middot; Showing: '+seekingLabels[seekIdx]+commBit;
+    }
+    renderDeck();
+  }
+  window.buildDeck = buildDeck;
+
+  function renderDeck(){
+    deckStack.innerHTML = '';
+    if(deckIdx >= deckOrder.length){
+      deckStack.innerHTML = deckIdx===0 ?
+        '<div class="empty-deck"><h3>No matches for that yet</h3>' +
+        '<p>Nobody in this sample fits those preferences. In the real app we\'d keep searching as new people join rather than leaving the feed empty.</p></div>'
+        : '<div class="empty-deck"><h3>That\'s everyone nearby</h3>' +
+        '<p>You\'ve seen every compatible match in this sample. In the real app, new profiles would keep loading as people join.</p></div>';
+      return;
+    }
+    var slice = deckOrder.slice(deckIdx, deckIdx+2).reverse();
+    slice.forEach(function(p, i){
+      var isTop = (i === slice.length-1);
+      var card = document.createElement('div');
+      card.className = 'card';
+      card.id = 'card-'+p.name;
+      card.style.transform = isTop ? 'translateY(0) scale(1)' : 'translateY(10px) scale(0.96)';
+      card.style.zIndex = isTop ? 2 : 1;
+      var score = matchScore(p);
+      var pi = profiles.indexOf(p);
+      var chips = topChips(p);
+      card.innerHTML =
+        '<div class="card-photo">' +
+          '<div class="avatar-fill" style="width:100%;height:100%;font-size:56px;' +
+            'background:linear-gradient(135deg,'+palettes[pi%palettes.length][0]+','+palettes[pi%palettes.length][1]+')">'+p.initials+'</div>' +
+          '<div class="match-badge"><span class="dot"></span>AI Match &middot; '+score+'%</div>' +
+          '<div class="card-name-row"><h3>'+p.name+', '+p.age+(p.verified?'<span class="verified-badge">&#10003; 18+ Verified</span>':'')+'</h3><div class="loc">'+p.loc+'</div></div>' +
+        '</div>' +
+        '<div class="card-body">' +
+          '<div class="card-meta">'+p.occupation+'<span class="sep">&middot;</span>'+p.type.info.name+'</div>' +
+          '<div class="highlight-row">' + chips.map(function(c){return '<span class="chip'+(c.warn?' warn':'')+'">'+c.label+'</span>';}).join('') + '</div>' +
+          '<div class="card-blurb">'+p.blurb+'</div>' +
+        '</div>';
+      deckStack.appendChild(card);
+    });
+  }
+
+  window.swipeTop = function(dir){
+    if(deckIdx >= deckOrder.length) return;
+    var p = deckOrder[deckIdx];
+    var card = document.getElementById('card-'+p.name);
+    if(card){
+      card.style.transition = 'transform .35s ease, opacity .35s ease';
+      card.style.transform = dir==='like' ? 'translate(120%, -10px) rotate(14deg)' : 'translate(-120%, -10px) rotate(-14deg)';
+      card.style.opacity = '0';
+    }
+    var showMatch = dir==='like' && matchScore(p) >= 85;
+    setTimeout(function(){
+      deckIdx++;
+      renderDeck();
+      if(showMatch){ openMatch(p); }
+    }, 260);
+  };
+
+  window.resetDeck = function(){ buildDeck(); };
+
+  // ---------------- Sponsored listing (monetization surface: property managers/agents pay to
+  // appear here -- kept visually and functionally separate from the compatibility feed itself,
+  // never mixed into the swipe deck, so the "compatibility, not classifieds" positioning holds) ----
+  window.dismissBanner = function(e){
+    if(e) e.stopPropagation();
+    document.getElementById('sponsoredBanner').classList.add('hidden');
+  };
+
+  // ---------------- Places: heat map of open units (landlords pay for featured pins) ----------------
+  // Modeled loosely on how HotPads pioneered map-pin apartment browsing and RentHop's "Rental
+  // Heatmaps" show density/price by area -- drawn here with layered radial gradients instead of
+  // a real map tile provider (keeps the prototype self-contained, no map API/key needed).
+  // Featured pins = the actual revenue mechanic: a landlord pays for the larger, flame-colored pin,
+  // the same paid-boost pattern Zillow Rental Manager and Apartments.com sell.
+  var places = [
+    {id:1, address:'214 Elm Street', price:'$1,450/mo', beds:'Studio', x:28, y:34, featured:true,
+     landlord:'Cobblestone Realty', blurb:'2 blocks from campus, laundry in-unit, pet friendly. Ask about our roommate-matched move-in special.'},
+    {id:2, address:'88 Harrison Ave, Unit 4', price:'$980/mo (per room)', beds:'3BR, room for rent', x:55, y:52, featured:true,
+     landlord:'Union Property Group', blurb:'Furnished room in a 3-bedroom, two roommates already living there and open to a compatible match.'},
+    {id:3, address:'12 Chestnut Court', price:'$1,120/mo', beds:'1BR', x:70, y:24, featured:false,
+     landlord:'Private landlord', blurb:'Quiet building, top floor, available start of next month.'},
+    {id:4, address:'403 Willow Ave, Unit 2', price:'$1,275/mo', beds:'2BR', x:40, y:70, featured:false,
+     landlord:'Private landlord', blurb:'Half of a duplex, small yard, on-street parking.'},
+    {id:5, address:'19 Birchwood Row', price:'$890/mo (per room)', beds:'4BR, room for rent', x:80, y:60, featured:false,
+     landlord:'Maple Student Housing', blurb:'Room in a 4-bedroom student house, walk to campus.'}
+  ];
+  var heatmapCanvas = document.getElementById('heatmapCanvas');
+  var placeOverlay = document.getElementById('placeOverlay');
+  var placeBody = document.getElementById('placeBody');
+  function renderPlaces(){
+    var blobs = places.map(function(p){
+      var color = p.featured ? 'var(--flame-rgb)' : '63,107,87';
+      var size = p.featured ? 150 : 100;
+      return '<div class="heat-blob" style="left:'+(p.x)+'%;top:'+(p.y)+'%;width:'+size+'px;height:'+size+'px;' +
+        'transform:translate(-50%,-50%);background:radial-gradient(circle, rgba('+color+',0.35), transparent 70%);"></div>';
+    }).join('');
+    var pins = places.map(function(p){
+      return '<button class="place-pin'+(p.featured?' featured':'')+'" style="left:'+p.x+'%;top:'+p.y+'%;" ' +
+        'onclick="openPlace('+p.id+')" aria-label="'+p.address+', '+p.price+'">' +
+        '<span class="pin-price">'+p.price+'</span><span class="pin-stem"></span></button>';
+    }).join('');
+    heatmapCanvas.innerHTML = blobs + pins;
+  }
+  window.openPlace = function(id){
+    var p = places.filter(function(x){ return x.id===id; })[0];
+    if(!p) return;
+    placeBody.innerHTML =
+      '<div class="place-price">'+p.price+'</div>' +
+      '<div style="font-weight:700;font-size:15px;margin-top:4px;">'+p.address+'</div>' +
+      '<div style="color:var(--muted);font-size:13px;margin-top:2px;">'+p.beds+' &middot; Listed by '+p.landlord+'</div>' +
+      '<div class="place-badges">' +
+        (p.featured ? '<span class="chip warn">Featured listing</span>' : '') +
+        '<span class="chip">Reviewed listing</span>' +
+      '</div>' +
+      '<p style="color:var(--muted);font-size:13.5px;line-height:1.55;">'+p.blurb+'</p>' +
+      '<button class="btn btn-primary" style="margin-top:16px;" onclick="contactLandlord(this)">Contact landlord</button>';
+    placeOverlay.classList.add('open');
+  };
+  window.closePlace = function(){ placeOverlay.classList.remove('open'); };
+  window.contactLandlord = function(btn){
+    btn.outerHTML = '<div class="verify-status" style="margin-top:16px;">&#10003; Request sent to the landlord</div>';
+  };
+
+  // ---------------- Detail overlay ----------------
+  var detailOverlay = document.getElementById('detailOverlay');
+  var detailPhoto = document.getElementById('detailPhoto');
+  var detailBody = document.getElementById('detailBody');
+
+  window.openDetail = function(){
+    if(deckIdx >= deckOrder.length) return;
+    var p = deckOrder[deckIdx];
+    var idx = profiles.indexOf(p);
+    detailPhoto.innerHTML = '<div class="avatar-fill" style="width:100%;height:100%;font-size:46px;' +
+      'background:linear-gradient(135deg,'+palettes[idx%palettes.length][0]+','+palettes[idx%palettes.length][1]+')">'+p.initials+'</div>';
+    var score = matchScore(p);
+    var scores = categoryScores(p);
+    var bars = scoredKeys.map(function(q){
+      var v = scores[q.key];
+      if(v===undefined) return '';
+      var priority = q.weight>=1.2 ? '<span class="priority">Top factor</span>' : '';
+      return '<div class="bar-row"><div class="bar-label"><span>'+barTitle[q.key]+priority+'</span><span class="num">'+v+'%</span></div>' +
+        '<div class="bar-track"><div class="bar-fill'+(v<60?' low':'')+'" style="width:'+v+'%"></div></div></div>';
+    }).join('');
+    detailBody.innerHTML =
+      '<div class="detail-score"><span class="big num">'+score+'%</span><span style="color:var(--muted);font-size:14px;">overall compatibility with '+p.name+'</span>' +
+        (p.verified?'<span class="verified-badge on-light">&#10003; 18+ Verified</span>':'')+'</div>' +
+      '<div class="detail-meta">'+p.type.info.name+' ('+p.type.code+') &middot; '+p.occupation+' &middot; '+p.relationship+' &middot; '+p.prevRoommate+'</div>' +
+      '<p style="color:var(--muted);font-size:13px;line-height:1.5;">'+p.blurb+'</p>' +
+      '<div class="bars">'+bars+'</div>' +
+      '<div class="detail-note">Top factor = weighted more heavily in the overall score, based on what dorm roommate-matching research finds matters most: cleanliness, sleep schedule, and noise/guest habits.</div>';
+    detailOverlay.classList.add('open');
+  };
+  window.closeDetail = function(){ detailOverlay.classList.remove('open'); };
+
+  // ---------------- Report overlay ----------------
+  var reportOverlay = document.getElementById('reportOverlay');
+  var reportBody = document.getElementById('reportBody');
+  var reportReasons = ['Fake or stolen photos','Inappropriate content','Harassment or threats','Scam or solicitation','Something else'];
+  window.openReport = function(){
+    if(deckIdx >= deckOrder.length) return;
+    var p = deckOrder[deckIdx];
+    reportBody.innerHTML =
+      '<p style="color:var(--muted);font-size:13px;line-height:1.5;margin-bottom:14px;">Reporting '+p.name+'. This is sent to our safety team for review, not shared with '+p.name+'.</p>' +
+      '<div class="options">' + reportReasons.map(function(r){
+        return '<button class="option" onclick="submitReport()">'+r+'</button>';
+      }).join('') + '</div>';
+    reportOverlay.classList.add('open');
+  };
+  window.closeReport = function(){ reportOverlay.classList.remove('open'); };
+  window.submitReport = function(){
+    reportBody.innerHTML = '<div style="padding-top:30px;text-align:center;">' +
+      '<div class="verify-status">&#10003; Report submitted &amp; blocked</div>' +
+      '<p style="color:var(--muted);font-size:13px;line-height:1.5;margin-top:10px;">Thanks &mdash; our safety team reviews every report. This profile is removed from your feed right away, same as a block.</p>' +
+      '<button class="btn btn-ghost" style="margin-top:16px;" onclick="dismissReport()">Done</button></div>';
+  };
+  window.dismissReport = function(){
+    closeReport();
+    if(deckIdx < deckOrder.length){ deckIdx++; renderDeck(); }
+  };
+
+  // ---------------- Match overlay ----------------
+  // The point of a match here is a contact number, not in-app dating/chat -- Nestmate connects
+  // compatible people (roommates or just friends) and gets out of the way once numbers are shared.
+  var matchOverlay = document.getElementById('matchOverlay');
+  var matchInner = document.getElementById('matchInner');
+  var lastMatched = null;
+  function yourFirstName(){
+    var n = answers.yourName;
+    return (n && n!=='Not shared') ? n : 'You';
+  }
+  function avatarPairHtml(p){
+    var idx = profiles.indexOf(p);
+    var youLabel = yourFirstName();
+    var youInitial = youLabel==='You' ? 'You' : youLabel.charAt(0).toUpperCase();
+    return '<div class="match-avatars">' +
+      '<div class="avatar-fill" style="width:78px;height:78px;border-radius:50%;font-size:'+(youLabel==='You'?26:30)+'px;background:linear-gradient(135deg,#fff,#fff);color:var(--flame-ink)">'+youInitial+'</div>' +
+      '<div class="avatar-fill" style="width:78px;height:78px;border-radius:50%;font-size:26px;background:linear-gradient(135deg,'+palettes[idx%palettes.length][0]+','+palettes[idx%palettes.length][1]+')">'+p.initials+'</div></div>';
+  }
+  var myMatches = [];
+  var matchDetailOverlay = document.getElementById('matchDetailOverlay');
+  var matchDetailBody = document.getElementById('matchDetailBody');
+
+  // Both the fresh "it's a match" popup and revisiting a match later from the Matches list share
+  // this same state machine (offer -> reveal -> agreement) -- a match is persistent, not a one-time
+  // popup, so contactStep() figures out which overlay is currently open and renders into that one.
+  function activeContactTarget(){
+    return matchOverlay.classList.contains('open') ?
+      {el:matchInner, isPopup:true} : {el:matchDetailBody, isPopup:false};
+  }
+  function openMatch(p){
+    lastMatched = p;
+    if(myMatches.indexOf(p)===-1) myMatches.push(p);
+    matchInner.innerHTML =
+      avatarPairHtml(p) +
+      '<h2>It\'s a match!</h2>' +
+      '<p>Our AI paired you two at a '+matchScore(p)+'% compatibility score, and you both liked it. Sharing your number is always up to you &mdash; nobody sees it unless you choose to share it.</p>' +
+      '<div style="width:100%;max-width:220px;">' +
+        '<button class="btn btn-primary" onclick="offerContact()">Share my number</button>' +
+        '<button class="btn btn-ghost" onclick="closeMatch()">Not now</button>' +
+      '</div>';
+    matchOverlay.classList.add('open');
+  }
+  window.offerContact = function(){
+    var p = lastMatched;
+    if(!p) return;
+    p.iShared = true;
+    var t = activeContactTarget();
+    t.el.innerHTML =
+      avatarPairHtml(p) +
+      '<h2>Number shared</h2>' +
+      '<p>'+p.name+' can now see your number. In the real app this waits on their own choice to share back &mdash; for this demo, here\'s theirs too, since it\'s a sample profile.</p>' +
+      '<div style="width:100%;max-width:220px;">' +
+        '<button class="btn btn-primary" onclick="revealContact()">See '+p.name+'\'s number</button>' +
+        '<button class="btn btn-ghost" onclick="'+(t.isPopup?'closeMatch()':'closeMatchDetail()')+'">Done for now</button>' +
+      '</div>';
+  };
+  window.revealContact = function(){
+    var p = lastMatched;
+    if(!p) return;
+    p.theyShared = true;
+    var t = activeContactTarget();
+    t.el.innerHTML =
+      avatarPairHtml(p) +
+      '<h2>'+p.name+'\'s number</h2>' +
+      '<p class="num" style="font-size:22px;color:'+(t.isPopup?'#fff':'var(--flame)')+';margin-bottom:6px;">'+p.phone+'</p>' +
+      '<p'+(t.isPopup?'':' style="color:var(--muted);"')+'>Text them directly &mdash; Nestmate\'s part is done once you\'re matched.</p>' +
+      '<button class="btn btn-ghost" style="max-width:220px;" onclick="showAgreement(\''+p.name+'\', this)">Get a free roommate agreement starter</button>' +
+      '<div style="width:100%;max-width:220px;">' +
+        '<button class="btn btn-primary" onclick="'+(t.isPopup?'closeMatch()':'closeMatchDetail()')+'">Done</button>' +
+      '</div>';
+  };
+  window.closeMatch = function(){ matchOverlay.classList.remove('open'); renderMatchesList(); };
+  window.closeMatchDetail = function(){ matchDetailOverlay.classList.remove('open'); };
+
+  // ---------------- Roommate agreement starter (real, common industry pattern -- Rocket Lawyer,
+  // LawDepot, DocuSign etc. all offer a free template; this auto-fills from quiz answers already
+  // collected so it's a genuine differentiator, not just a link out) ----------------
+  var budgetLabels = ['$700-$950/mo','$950-$1,300/mo','$1,300+/mo'];
+  var cleanLabels = ['a daily cleaning rhythm','a weekly cleaning reset','a relaxed, no-fixed-schedule approach to cleaning'];
+  var guestLabels = ['rare overnight guests','occasional guests with a heads-up','frequent guests being normal'];
+  window.showAgreement = function(otherName, btn){
+    var rentSplit = answers.hasOwnProperty('budget') ? budgetLabels[answers.budget] : '[fill in together]';
+    var cleaning = answers.hasOwnProperty('clean') ? cleanLabels[answers.clean] : '[fill in together]';
+    var guests = answers.hasOwnProperty('noise') ? guestLabels[answers.noise] : '[fill in together]';
+    var text = 'ROOMMATE AGREEMENT STARTER (not legal advice -- a starting point to fill in together and have reviewed before signing)\n\n'+
+      '1. Roommates: '+yourFirstName()+' and '+otherName+'\n'+
+      '2. Rent target discussed: '+rentSplit+' each (confirm actual split once you pick a place)\n'+
+      '3. Cleaning: '+yourFirstName()+' prefers '+cleaning+' -- agree on a shared standard\n'+
+      '4. Guests: '+yourFirstName()+' is used to '+guests+' -- set shared expectations\n'+
+      '5. Utilities, groceries, and chores: [fill in together]\n'+
+      '6. Move-out notice period: [fill in together]\n'+
+      '7. Conflict resolution: talk it out directly and promptly if something\'s off\n\n'+
+      'This is a starting point generated from your Nestmate compatibility answers, not a binding contract -- have any real agreement reviewed before signing, and consider a full template from a service like Rocket Lawyer or LawDepot for anything with real money involved.';
+    var box = document.createElement('div');
+    box.className = 'agreement-box';
+    box.textContent = text;
+    btn.parentNode.insertBefore(box, btn);
+    btn.remove();
+  };
+
+  // ---------------- Matches list (fixes a real gap: a match used to vanish once you closed the
+  // popup, with no way to come back to it) ----------------
+  var matchesList = document.getElementById('matchesList');
+  function renderMatchesList(){
+    if(myMatches.length===0){
+      matchesList.innerHTML = '<div class="empty-deck" style="padding-top:40px;"><h3>No matches yet</h3>' +
+        '<p>Swipe right on someone you compatibility-matched with to start a list here.</p></div>';
+      return;
+    }
+    matchesList.innerHTML = myMatches.map(function(p){
+      var idx = profiles.indexOf(p);
+      var status = p.theyShared ? 'Numbers shared' : (p.iShared ? 'You shared yours' : 'New match');
+      return '<button class="match-row" onclick="openMatchDetail('+idx+')">' +
+        '<div class="avatar-fill" style="background:linear-gradient(135deg,'+palettes[idx%palettes.length][0]+','+palettes[idx%palettes.length][1]+')">'+p.initials+'</div>' +
+        '<div class="mr-info"><div class="mr-name">'+p.name+'</div><div class="mr-sub">'+matchScore(p)+'% AI match &middot; '+p.type.info.name+'</div></div>' +
+        '<div class="mr-status">'+status+'</div>' +
+      '</button>';
+    }).join('');
+  }
+  window.openMatchDetail = function(profileIdx){
+    var p = profiles[profileIdx];
+    lastMatched = p;
+    matchDetailBody.innerHTML =
+      avatarPairHtml(p) +
+      '<h2>'+p.name+'</h2>' +
+      '<p>'+matchScore(p)+'% AI compatibility match.</p>' +
+      (p.theyShared ?
+        '<p class="num" style="font-size:20px;color:var(--flame);margin:8px 0;">'+p.phone+'</p>' +
+        '<button class="btn btn-ghost" style="max-width:220px;" onclick="showAgreement(\''+p.name+'\', this)">Get a free roommate agreement starter</button>'
+        : '<div style="width:100%;max-width:220px;">' +
+            '<button class="btn btn-primary" onclick="'+(p.iShared?'revealContact()':'offerContact()')+'">'+(p.iShared?'See their number':'Share my number')+'</button>' +
+          '</div>');
+    matchDetailOverlay.classList.add('open');
+  };
+
+  // init
+  renderQuestion();
+  updateDemoNav();
+})();
+</script>
+
+</body></html>
